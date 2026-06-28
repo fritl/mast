@@ -21,6 +21,8 @@ class TokenType(Enum):
     LPAREN = auto()
     RPAREN = auto()
 
+    EOF = auto()
+
 
 @dataclass(frozen=True)
 class Token:

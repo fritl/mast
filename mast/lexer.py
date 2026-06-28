@@ -51,4 +51,6 @@ def tokenize(math_expr: str) -> list[Token]:
             token_type = token_map[math_expr[i]]
             token_stream.append(Token(token_type))
             i += 1
+
+    token_stream.append(Token(TokenType.EOF))
     return token_stream
