@@ -1,7 +1,15 @@
+from mast.analysis import collect_vars
 from mast.ast_nodes import Equation, Expr, BinaryOp, UnaryOp, Var, Num
 from mast.parser import RDParser
 from mast.lexer import tokenize
 import pygraphviz as pgv
+
+
+def parse_float(s: str) -> float | None:
+    try:
+        return float(s)
+    except ValueError:
+        return None
 
 
 def main():
@@ -10,8 +18,16 @@ def main():
     tokens = tokenize(mathematical_string)
     print("Mathematical string after processing:")
     ast: Equation | Expr = RDParser(tokens).parse()
-    print(ast)
+    variables = collect_vars(ast)
+    print("Input variable values:")
+    variable_env: dict[str, float] = {}
+    for v in variables:
+        value = parse_float(input(f"{v}: "))
+        while value is None:
+            value = parse_float(input(f"{v}: "))
+        variable_env[v] = value
     draw(mathematical_string, ast)
+    print(ast.eval(variable_env))
 
 
 def add_node(cur_node_id: str | None, graph: pgv.AGraph, node: Expr | Equation):

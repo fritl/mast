@@ -10,10 +10,6 @@ class RDParser:
         self.tokens: list[Token] = tokens
         self.pos: int = 0
 
-    @property
-    def __cur_token(self) -> Token:
-        return self.tokens[self.pos]
-
     def __consume(self, token_type: TT) -> Token:
         next_token = self.__peek()
         if next_token.tokentype is not token_type:

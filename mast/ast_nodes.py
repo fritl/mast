@@ -13,6 +13,13 @@ class Equation:
     def __str__(self):
         return f"{self.left} = {self.right}"
 
+    def eval(self, env: dict[str, float]) -> bool:
+        left = self.left.eval(env)
+        right = self.right.eval(env)
+        if left == right:
+            return True
+        return False
+
 
 @dataclass
 class BinaryOp:
@@ -27,6 +34,19 @@ class BinaryOp:
     def __str__(self):
         return f"({self.left} {self.operator} {self.right})"
 
+    def eval(self, env: dict[str, float]) -> float:
+        left = self.left.eval(env)
+        right = self.right.eval(env)
+        match self.operator:
+            case "+":
+                return left + right
+            case "-":
+                return left - right
+            case "*":
+                return left * right
+            case "/":
+                return left / right
+
 
 @dataclass
 class UnaryOp:
@@ -40,6 +60,11 @@ class UnaryOp:
     def label(self) -> str:
         return self.operator
 
+    def eval(self, env: dict[str, float]):
+        if self.operator == "-":
+            return -self.operand.eval(env)
+        return self.operand.eval(env)
+
 
 @dataclass
 class Num:
@@ -52,6 +77,9 @@ class Num:
     def label(self) -> str:
         return f"{self.value}"
 
+    def eval(self, _: dict[str, float]):
+        return self.value
+
 
 @dataclass
 class Var:
@@ -63,3 +91,6 @@ class Var:
     @property
     def label(self) -> str:
         return self.name
+
+    def eval(self, env: dict[str, float]):
+        return env[self.name]
