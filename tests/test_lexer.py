@@ -1,5 +1,5 @@
-from src.mast.lexer import tokenize
-from src.mast.tokens import TokenType as TT, Token
+from mast.lexer import tokenize
+from mast.tokens import TokenType as TT, Token
 import pytest
 
 
@@ -19,7 +19,8 @@ import pytest
 )
 def test_single_tokens(expression: str, type: TT, value: str | float | None):
     tokens: list[Token] = tokenize(expression)
-    assert len(tokens) == 1
+    # Len = 1 + EOF Token
+    assert len(tokens) == 2
     first_token = tokens[0]
     assert first_token.tokentype == type
     assert first_token.value == value
@@ -36,7 +37,7 @@ def test_single_tokens(expression: str, type: TT, value: str | float | None):
 )
 def test_numbers(expression: str, value: str | float | None):
     tokens: list[Token] = tokenize(expression)
-    assert len(tokens) == 1
+    assert len(tokens) == 2
     first_token = tokens[0]
     assert first_token.tokentype == TT.NUM
     assert first_token.value == pytest.approx(value)
@@ -51,6 +52,7 @@ def test_equation():
         Token(TT.NUM, 12),
         Token(TT.EQUAL),
         Token(TT.NUM, 10),
+        Token(TT.EOF),
     ]
     assert tokens == expected_tokens
 
@@ -61,17 +63,18 @@ def test_additional_whitespace():
         Token(TT.NUM, 3),
         Token(TT.PLUS),
         Token(TT.NUM, 12),
+        Token(TT.EOF),
     ]
     assert tokens == expected_tokens
 
 
 def test_empty_strings_returning_empty_list():
     tokens: list[Token] = tokenize("")
-    assert tokens == []
+    assert tokens == [Token(TT.EOF)]
     tokens: list[Token] = tokenize(" ")
-    assert tokens == []
+    assert tokens == [Token(TT.EOF)]
     tokens: list[Token] = tokenize("     ")
-    assert tokens == []
+    assert tokens == [Token(TT.EOF)]
 
 
 @pytest.mark.parametrize(
