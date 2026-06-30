@@ -2,6 +2,8 @@ from mast.analysis import collect_vars
 from mast.ast_nodes import Equation, Expr, BinaryOp, UnaryOp, Var, Num
 from mast.parser import RDParser
 from mast.lexer import tokenize
+from rich import print
+from rich.console import Console
 import pygraphviz as pgv
 
 
@@ -13,22 +15,25 @@ def parse_float(s: str) -> float | None:
 
 
 def main():
-    print("Mathematical Abstract Syntax Tree")
-    mathematical_string = input("Input your mathematical equation or expression: ")
+    console = Console()
+    print("[#f18825]Mathematical Abstract Syntax Tree")
+    mathematical_string = console.input(
+        "[grey66]Input your mathematical equation or expression: "
+    )
     tokens = tokenize(mathematical_string)
-    print("Mathematical string after processing:")
+    # print("Mathematical string after processing:")
     ast: Equation | Expr = RDParser(tokens).parse()
     variables = collect_vars(ast)
+    variable_env: dict[str, float] = {}
     if len(variables) > 0:
-        print("Input variable values:")
-        variable_env: dict[str, float] = {}
+        print("[grey66]Input variable values:")
         for v in sorted(variables):
-            value = parse_float(input(f"{v}: "))
+            value = parse_float(console.input(f"[grey66]{v}: "))
             while value is None:
-                value = parse_float(input(f"{v}: "))
+                value = parse_float(console.input(f"[grey66]{v}: "))
             variable_env[v] = value
     # draw(mathematical_string, ast)
-    print(ast.eval(variable_env))
+    print(f"[grey66]Result:[default] {ast.eval(variable_env)}")
 
 
 def add_node(cur_node_id: str | None, graph: pgv.AGraph, node: Expr | Equation):
