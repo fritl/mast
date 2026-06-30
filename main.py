@@ -19,14 +19,15 @@ def main():
     print("Mathematical string after processing:")
     ast: Equation | Expr = RDParser(tokens).parse()
     variables = collect_vars(ast)
-    print("Input variable values:")
-    variable_env: dict[str, float] = {}
-    for v in variables:
-        value = parse_float(input(f"{v}: "))
-        while value is None:
+    if len(variables) > 0:
+        print("Input variable values:")
+        variable_env: dict[str, float] = {}
+        for v in sorted(variables):
             value = parse_float(input(f"{v}: "))
-        variable_env[v] = value
-    draw(mathematical_string, ast)
+            while value is None:
+                value = parse_float(input(f"{v}: "))
+            variable_env[v] = value
+    # draw(mathematical_string, ast)
     print(ast.eval(variable_env))
 
 
