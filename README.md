@@ -14,6 +14,7 @@
         Fun with lexing parsing and much more of mathematical expressions
     </p>
 </div>
+---
 
 ![](./(3+2)*10.svg)
 ![](./3+2*10.svg)

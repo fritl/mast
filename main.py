@@ -23,6 +23,8 @@ def main():
     tokens = tokenize(mathematical_string)
     # print("Mathematical string after processing:")
     ast: Equation | Expr = RDParser(tokens).parse()
+    ast = ast.simplify()
+    print(f"[grey66]Simplified:[default] {ast}")
     variables = collect_vars(ast)
     variable_env: dict[str, float] = {}
     if len(variables) > 0:
