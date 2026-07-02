@@ -1,6 +1,6 @@
 from .tokens import Token
 from .tokens import TokenType as TT
-from .ast_nodes import Expr, Num, Var, BinaryOp, Equation, UnaryOp, Power
+from .ast_nodes import Expr, Num, Var, BinaryOp, Equation, UnaryOp, Power, FunctionCall
 
 
 class RDParser:
@@ -21,6 +21,9 @@ class RDParser:
 
     def __peek(self) -> Token:
         return self.tokens[self.pos]
+
+    def __next(self) -> Token:
+        return self.tokens[self.pos + 1]
 
     def parse(self) -> Equation | Expr:
         return self.__equation()
@@ -97,6 +100,8 @@ class RDParser:
                 return Num(next_token.value)
 
             case TT.IDENTIFIER:
+                if self.__next().tokentype == TT.LPAREN:
+                    return self.__function_call()
                 self.__consume(TT.IDENTIFIER)
                 if next_token.value is None:
                     raise RuntimeError("Value of variable token is None")
@@ -112,3 +117,19 @@ class RDParser:
                 return Var(next_token.value)
 
         raise RuntimeError(f"Unexpected Token {next_token.tokentype}")
+
+    def __function_call(self) -> Expr:
+        """FunctionCall = Identifier, "(", Expression, ")" (*Identifier mus be a known function name*)"""
+        function_name = self.__peek().value
+        if isinstance(function_name, float) or isinstance(function_name, int):
+            raise SyntaxError(
+                f"Value of Identifier is {function_name} should be a string name"
+            )
+        KNOWN_FUNCTIONS = {"sin", "cos", "tan", "sqrt", "ln", "log"}
+        if function_name not in KNOWN_FUNCTIONS:
+            raise SyntaxError(f"function {function_name} not found")
+        self.__consume(TT.IDENTIFIER)
+        self.__consume(TT.LPAREN)
+        parameter = self.__expression()
+        self.__consume(TT.RPAREN)
+        return FunctionCall(function_name, parameter)

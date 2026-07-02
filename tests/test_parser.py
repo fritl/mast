@@ -1,7 +1,7 @@
 import pytest
 from mast.tokens import Token, TokenType as TT
 from mast.parser import RDParser
-from mast.ast_nodes import Num, Var, BinaryOp, UnaryOp, Equation, Power
+from mast.ast_nodes import Num, Var, BinaryOp, UnaryOp, Equation, Power, FunctionCall
 
 
 def t(*args) -> list[Token]:
@@ -175,20 +175,6 @@ class TestEquations:
         assert not isinstance(result, Equation)
 
 
-class TestErrors:
-    def test_unmatched_lparen_raises(self):
-        with pytest.raises(SyntaxError):
-            parse(t(TT.LPAREN, (TT.NUM, 3.0)))
-
-    def test_unexpected_token_raises(self):
-        with pytest.raises(RuntimeError):
-            parse(t(TT.PLUS_PLUS) if hasattr(TT, "PLUS_PLUS") else t(TT.MUL))
-
-    def test_dangling_operator_raises(self):
-        with pytest.raises(RuntimeError):
-            parse(t(TT.MUL))
-
-
 class TestPower:
     def test_simple_power(self):
         # x ^ 2
@@ -250,3 +236,114 @@ class TestPower:
             )
         )
         assert result == Power(UnaryOp("-", Var("x")), Num(2.0))
+
+
+class TestFunctionCall:
+    def test_simple_function_call(self):
+        # sin(x)
+        result = parse(
+            t((TT.IDENTIFIER, "sin"), TT.LPAREN, (TT.IDENTIFIER, "x"), TT.RPAREN)
+        )
+        assert result == FunctionCall("sin", Var("x"))
+
+    def test_function_call_with_number(self):
+        # sqrt(4)
+        result = parse(t((TT.IDENTIFIER, "sqrt"), TT.LPAREN, (TT.NUM, 4.0), TT.RPAREN))
+        assert result == FunctionCall("sqrt", Num(4.0))
+
+    def test_function_call_with_expression_argument(self):
+        # sin(x + 1)
+        result = parse(
+            t(
+                (TT.IDENTIFIER, "sin"),
+                TT.LPAREN,
+                (TT.IDENTIFIER, "x"),
+                TT.PLUS,
+                (TT.NUM, 1.0),
+                TT.RPAREN,
+            )
+        )
+        assert result == FunctionCall("sin", BinaryOp("+", Var("x"), Num(1.0)))
+
+    def test_nested_function_calls(self):
+        # sin(cos(x))
+        result = parse(
+            t(
+                (TT.IDENTIFIER, "sin"),
+                TT.LPAREN,
+                (TT.IDENTIFIER, "cos"),
+                TT.LPAREN,
+                (TT.IDENTIFIER, "x"),
+                TT.RPAREN,
+                TT.RPAREN,
+            )
+        )
+        assert result == FunctionCall("sin", FunctionCall("cos", Var("x")))
+
+    def test_function_call_in_larger_expression(self):
+        # 2 * sin(x) + 1
+        result = parse(
+            t(
+                (TT.NUM, 2.0),
+                TT.MUL,
+                (TT.IDENTIFIER, "sin"),
+                TT.LPAREN,
+                (TT.IDENTIFIER, "x"),
+                TT.RPAREN,
+                TT.PLUS,
+                (TT.NUM, 1.0),
+            )
+        )
+        assert result == BinaryOp(
+            "+", BinaryOp("*", Num(2.0), FunctionCall("sin", Var("x"))), Num(1.0)
+        )
+
+    def test_function_call_with_power(self):
+        # sin(x) ^ 2
+        result = parse(
+            t(
+                (TT.IDENTIFIER, "sin"),
+                TT.LPAREN,
+                (TT.IDENTIFIER, "x"),
+                TT.RPAREN,
+                TT.POW,
+                (TT.NUM, 2.0),
+            )
+        )
+        assert result == Power(FunctionCall("sin", Var("x")), Num(2.0))
+
+    def test_unary_minus_before_function_call(self):
+        # -sin(x)
+        result = parse(
+            t(
+                TT.MINUS,
+                (TT.IDENTIFIER, "sin"),
+                TT.LPAREN,
+                (TT.IDENTIFIER, "x"),
+                TT.RPAREN,
+            )
+        )
+        assert result == UnaryOp("-", FunctionCall("sin", Var("x")))
+
+
+class TestErrors:
+    def test_unmatched_lparen_raises(self):
+        with pytest.raises(SyntaxError):
+            parse(t(TT.LPAREN, (TT.NUM, 3.0)))
+
+    def test_unexpected_token_raises(self):
+        with pytest.raises(RuntimeError):
+            parse(t(TT.PLUS_PLUS) if hasattr(TT, "PLUS_PLUS") else t(TT.MUL))
+
+    def test_dangling_operator_raises(self):
+        with pytest.raises(RuntimeError):
+            parse(t(TT.MUL))
+
+    def test_missing_rparen_raises(self):
+        with pytest.raises(SyntaxError):
+            parse(t((TT.IDENTIFIER, "sin"), TT.LPAREN, (TT.IDENTIFIER, "x")))
+
+    def test_empty_function_call_raises(self):
+        # sin() ohne Argument
+        with pytest.raises(RuntimeError):
+            parse(t((TT.IDENTIFIER, "sin"), TT.LPAREN, TT.RPAREN))

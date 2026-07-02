@@ -1,7 +1,8 @@
+from math import sin, cos, tan, log, sqrt, log10
 from typing import Literal, Self
 from dataclasses import dataclass
 
-type Expr = BinaryOp | UnaryOp | Num | Var | Power
+type Expr = BinaryOp | UnaryOp | Num | Var | Power | FunctionCall
 
 
 @dataclass
@@ -208,6 +209,46 @@ class UnaryOp:
         if self.operator == "+":
             return self.operand
         return self
+
+
+@dataclass
+class FunctionCall:
+    name: str
+    parameter: Expr
+
+    def __str__(self):
+        return f"{self.name}({self.parameter})"
+
+    @property
+    def label(self) -> str:
+        return self.name
+
+    def eval(self, env: dict[str, float]) -> float:
+        parameter_value = self.parameter.eval(env)
+        match self.name:
+            case "sin":
+                result = sin(parameter_value)
+                return result
+            case "cos":
+                result = cos(parameter_value)
+                return result
+            case "tan":
+                result = tan(parameter_value)
+                return result
+            case "ln":
+                result = log(parameter_value)
+                return result
+            case "log":
+                result = log10(parameter_value)
+                return result
+            case "sqrt":
+                result = sqrt(parameter_value)
+                return result
+            case _:
+                raise RuntimeError(f"Function {self.name} not found")
+
+    def simplify(self) -> Expr:
+        raise NotImplementedError
 
 
 @dataclass
