@@ -1,6 +1,6 @@
 from .tokens import Token
 from .tokens import TokenType as TT
-from .ast_nodes import Expr, Num, Var, BinaryOp, Equation, UnaryOp
+from .ast_nodes import Expr, Num, Var, BinaryOp, Equation, UnaryOp, Power
 
 
 class RDParser:
@@ -45,17 +45,21 @@ class RDParser:
 
     def __term(self) -> Expr:
         """Term = Factor, { ("*" | "/"), Factor } ;"""
-        node = self.__base()
+        node = self.__factor()
         while self.__peek().tokentype in (TT.DIV, TT.MUL):
             op = "*" if self.__peek().tokentype == TT.MUL else "/"
             self.__consume(self.__peek().tokentype)
             # left associative
-            node = BinaryOp(op, node, self.__base())
+            node = BinaryOp(op, node, self.__factor())
         return node
 
     def __factor(self) -> Expr:
         """Factor = Base, [ "^", Factor ] ;"""
-        pass
+        node = self.__base()
+        if self.__peek().tokentype == TT.POW:
+            self.__consume(TT.POW)
+            node = Power(node, self.__factor())
+        return node
 
     def __base(self) -> Expr:
         """

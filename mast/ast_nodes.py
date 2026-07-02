@@ -1,7 +1,7 @@
 from typing import Literal, Self
 from dataclasses import dataclass
 
-type Expr = BinaryOp | UnaryOp | Num | Var
+type Expr = BinaryOp | UnaryOp | Num | Var | Power
 
 
 @dataclass
@@ -55,6 +55,30 @@ def equal(node_a, node_b):
             and equal(node_a.left, node_b.left)
             and equal(node_a.right, node_b.right)
         )
+
+    if isinstance(node_a, Power):
+        return equal(node_a.base, node_b.base) and equal(
+            node_a.exponent, node_b.exponent
+        )
+
+
+@dataclass
+class Power:
+    base: Expr
+    exponent: Expr
+
+    label: str = "^"
+
+    def __str__(self):
+        return f"({self.base}^{self.exponent})"
+
+    def eval(self, env: dict[str, float]) -> float:
+        base = self.base.eval(env)
+        exponent = self.exponent.eval(env)
+        return base**exponent
+
+    def simplify(self) -> Expr:
+        raise NotImplementedError
 
 
 @dataclass

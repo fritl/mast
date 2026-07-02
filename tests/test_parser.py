@@ -1,7 +1,7 @@
 import pytest
 from mast.tokens import Token, TokenType as TT
 from mast.parser import RDParser
-from mast.ast_nodes import Num, Var, BinaryOp, UnaryOp, Equation
+from mast.ast_nodes import Num, Var, BinaryOp, UnaryOp, Equation, Power
 
 
 def t(*args) -> list[Token]:
@@ -187,3 +187,66 @@ class TestErrors:
     def test_dangling_operator_raises(self):
         with pytest.raises(RuntimeError):
             parse(t(TT.MUL))
+
+
+class TestPower:
+    def test_simple_power(self):
+        # x ^ 2
+        result = parse(t((TT.IDENTIFIER, "x"), TT.POW, (TT.NUM, 2.0)))
+        assert result == Power(Var("x"), Num(2.0))
+
+    def test_power_binds_tighter_than_mul(self):
+        # 2 * x ^ 3  →  2 * (x^3)
+        result = parse(
+            t((TT.NUM, 2.0), TT.MUL, (TT.IDENTIFIER, "x"), TT.POW, (TT.NUM, 3.0))
+        )
+        assert result == BinaryOp("*", Num(2.0), Power(Var("x"), Num(3.0)))
+
+    def test_power_is_right_associative(self):
+        # 2 ^ 3 ^ 2  →  2 ^ (3^2)
+        result = parse(t((TT.NUM, 2.0), TT.POW, (TT.NUM, 3.0), TT.POW, (TT.NUM, 2.0)))
+        assert result == Power(Num(2.0), Power(Num(3.0), Num(2.0)))
+
+    def test_power_with_parens_base(self):
+        # (x + 1) ^ 2
+        result = parse(
+            t(
+                TT.LPAREN,
+                (TT.IDENTIFIER, "x"),
+                TT.PLUS,
+                (TT.NUM, 1.0),
+                TT.RPAREN,
+                TT.POW,
+                (TT.NUM, 2.0),
+            )
+        )
+        assert result == Power(BinaryOp("+", Var("x"), Num(1.0)), Num(2.0))
+
+    def test_power_with_parens_exponent(self):
+        # x ^ (2 + 1)
+        result = parse(
+            t(
+                (TT.IDENTIFIER, "x"),
+                TT.POW,
+                TT.LPAREN,
+                (TT.NUM, 2.0),
+                TT.PLUS,
+                (TT.NUM, 1.0),
+                TT.RPAREN,
+            )
+        )
+        assert result == Power(Var("x"), BinaryOp("+", Num(2.0), Num(1.0)))
+
+    def test_negative_base_needs_parens(self):
+        # (-x) ^ 2
+        result = parse(
+            t(
+                TT.LPAREN,
+                TT.MINUS,
+                (TT.IDENTIFIER, "x"),
+                TT.RPAREN,
+                TT.POW,
+                (TT.NUM, 2.0),
+            )
+        )
+        assert result == Power(UnaryOp("-", Var("x")), Num(2.0))
