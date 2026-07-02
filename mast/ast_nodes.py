@@ -79,7 +79,20 @@ class Power:
         return base**exponent
 
     def simplify(self) -> Expr:
-        raise NotImplementedError
+        self.base = self.base.simplify()
+        self.exponent = self.exponent.simplify()
+        if is_zero(self.exponent):
+            return Num(1)
+        if is_zero(self.base):
+            return Num(0)
+        if is_one(self.base):
+            return Num(1)
+        if is_one(self.exponent):
+            return self.base
+
+        if isinstance(self.base, Num) and isinstance(self.exponent, Num):
+            return Num(self.base.value**self.exponent.value)
+        return self
 
 
 @dataclass
@@ -147,6 +160,9 @@ class BinaryOp:
 
         if isinstance(self.left, Num) and isinstance(self.right, Num):
             return Num(self.left.value * self.right.value)
+
+        if equal(self.left, self.right):
+            return Power(self.left, Num(2))
 
         return self
 
@@ -248,7 +264,10 @@ class FunctionCall:
                 raise RuntimeError(f"Function {self.name} not found")
 
     def simplify(self) -> Expr:
-        raise NotImplementedError
+        self.parameter = self.parameter.simplify()
+        if isinstance(self.parameter, Num):
+            return Num(self.eval({}))
+        return self
 
 
 @dataclass

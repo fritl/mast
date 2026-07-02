@@ -1,4 +1,3 @@
-from pytest import param
 from math import e, pi
 from mast.analysis import collect_vars
 from mast.ast_nodes import (
@@ -34,7 +33,7 @@ def main():
     tokens = tokenize(mathematical_string)
     # print("Mathematical string after processing:")
     ast: Equation | Expr = RDParser(tokens).parse()
-    # ast = ast.simplify()
+    ast = ast.simplify()
     print(f"[grey66]Simplified:[default] {ast}")
     variables = collect_vars(ast)
     variable_env: dict[str, float] = {"e": e, "pi": pi}
@@ -46,7 +45,7 @@ def main():
             while value is None:
                 value = parse_float(console.input(f"[grey66]{v}: "))
             variable_env[v] = value
-    draw(mathematical_string, ast)
+    # draw(mathematical_string, ast)
     print(f"[grey66]Result:[default] {ast.eval(variable_env)}")
 
 

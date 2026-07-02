@@ -1,4 +1,4 @@
-from mast.ast_nodes import Expr, Equation, BinaryOp, UnaryOp, Var
+from mast.ast_nodes import Expr, Equation, BinaryOp, UnaryOp, Var, Power, FunctionCall
 
 
 def collect_vars(node: Expr | Equation) -> set[str]:
@@ -6,6 +6,12 @@ def collect_vars(node: Expr | Equation) -> set[str]:
     match node:
         case Equation(left, right):
             return collect_vars(left) | collect_vars(right)
+
+        case Power(base, exponent):
+            return collect_vars(base) | collect_vars(exponent)
+
+        case FunctionCall(_, parameter):
+            return collect_vars(parameter)
 
         case BinaryOp(_, left, right):
             return collect_vars(left) | collect_vars(right)
