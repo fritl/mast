@@ -1,6 +1,13 @@
 # The Grammar for mast
 
-Equation -> Expression = Expression | Expression
-Expression -> Term (+|- Term)*
-Term -> Base (*|/ Base)*
-Base -> -Base | +Base | (Expression) | Number | Variable
+```ebnf
+Equation   = Expression, "=", Expression | Expression ;
+Expression = Term, { ("+" | "-"), Term } ;
+Term       = Factor, { ("*" | "/"), Factor } ;
+Factor     = Base, [ "^", Factor ] ;
+Base       = "-", Base
+           | "+", Base
+           | "(", Expression, ")"
+           | Number
+           | Variable ;
+```

@@ -26,7 +26,7 @@ class RDParser:
         return self.__equation()
 
     def __equation(self) -> Equation | Expr:
-        """Equation -> Expression = Expression | Expression"""
+        """Equation   = Expression, "=", Expression | Expression ;"""
         node = self.__expression()
         if self.__peek().tokentype is TT.EOF:
             return node
@@ -34,7 +34,7 @@ class RDParser:
         return Equation(node, self.__expression())
 
     def __expression(self) -> Expr:
-        """Expression -> Term (+|- Term)*"""
+        """Expression = Term, { ("+" | "-"), Term } ;"""
         node = self.__term()
         while self.__peek().tokentype in (TT.PLUS, TT.MINUS):
             op = "+" if self.__peek().tokentype == TT.PLUS else "-"
@@ -44,7 +44,7 @@ class RDParser:
         return node
 
     def __term(self) -> Expr:
-        """Term -> Base (*|/ Base)*"""
+        """Term = Factor, { ("*" | "/"), Factor } ;"""
         node = self.__base()
         while self.__peek().tokentype in (TT.DIV, TT.MUL):
             op = "*" if self.__peek().tokentype == TT.MUL else "/"
@@ -53,8 +53,19 @@ class RDParser:
             node = BinaryOp(op, node, self.__base())
         return node
 
+    def __factor(self) -> Expr:
+        """Factor = Base, [ "^", Factor ] ;"""
+        pass
+
     def __base(self) -> Expr:
-        """Base -> -Base | +Base | (Expression) | Number | Variable"""
+        """
+        Base = "-", Base
+             | "+", Base
+             | "(", Expression, ")"
+             | Number
+             | Variable ;
+               "^", Factor ] ;
+        """
         next_token = self.__peek()
         match next_token.tokentype:
             case TT.MINUS:
