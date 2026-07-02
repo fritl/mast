@@ -81,8 +81,8 @@ class RDParser:
                     )
                 return Num(next_token.value)
 
-            case TT.VAR:
-                self.__consume(TT.VAR)
+            case TT.IDENTIFIER:
+                self.__consume(TT.IDENTIFIER)
                 if next_token.value is None:
                     raise RuntimeError("Value of variable token is None")
                 if isinstance(next_token.value, float):

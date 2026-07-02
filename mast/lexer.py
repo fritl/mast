@@ -32,7 +32,7 @@ def tokenize(math_expr: str) -> list[Token]:
             j = i + 1
             while j < len(math_expr) and math_expr[j].isalpha():
                 j += 1
-            token_stream.append(Token(TokenType.VAR, math_expr[i:j]))
+            token_stream.append(Token(TokenType.IDENTIFIER, math_expr[i:j]))
             i = j
         else:
             token_map = {
@@ -43,6 +43,7 @@ def tokenize(math_expr: str) -> list[Token]:
                 "(": TokenType.LPAREN,
                 ")": TokenType.RPAREN,
                 "=": TokenType.EQUAL,
+                "^": TokenType.POW,
             }
 
             if math_expr[i] not in token_map.keys():

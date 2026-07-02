@@ -26,34 +26,38 @@ class TestBasicExpressions:
         assert parse(t((TT.NUM, 3.0))) == Num(3.0)
 
     def test_single_variable(self):
-        assert parse(t((TT.VAR, "x"))) == Var("x")
+        assert parse(t((TT.IDENTIFIER, "x"))) == Var("x")
 
     def test_addition(self):
-        result = parse(t((TT.NUM, 3.0), TT.PLUS, (TT.VAR, "x")))
+        result = parse(t((TT.NUM, 3.0), TT.PLUS, (TT.IDENTIFIER, "x")))
         assert result == BinaryOp("+", Num(3.0), Var("x"))
 
     def test_subtraction(self):
-        result = parse(t((TT.VAR, "x"), TT.MINUS, (TT.NUM, 2.0)))
+        result = parse(t((TT.IDENTIFIER, "x"), TT.MINUS, (TT.NUM, 2.0)))
         assert result == BinaryOp("-", Var("x"), Num(2.0))
 
     def test_multiplication(self):
-        result = parse(t((TT.NUM, 3.0), TT.MUL, (TT.VAR, "x")))
+        result = parse(t((TT.NUM, 3.0), TT.MUL, (TT.IDENTIFIER, "x")))
         assert result == BinaryOp("*", Num(3.0), Var("x"))
 
     def test_division(self):
-        result = parse(t((TT.VAR, "x"), TT.DIV, (TT.NUM, 2.0)))
+        result = parse(t((TT.IDENTIFIER, "x"), TT.DIV, (TT.NUM, 2.0)))
         assert result == BinaryOp("/", Var("x"), Num(2.0))
 
 
 class TestPrecedence:
     def test_mul_binds_tighter_than_add(self):
         # 3 + 2 * x  →  3 + (2*x)
-        result = parse(t((TT.NUM, 3.0), TT.PLUS, (TT.NUM, 2.0), TT.MUL, (TT.VAR, "x")))
+        result = parse(
+            t((TT.NUM, 3.0), TT.PLUS, (TT.NUM, 2.0), TT.MUL, (TT.IDENTIFIER, "x"))
+        )
         assert result == BinaryOp("+", Num(3.0), BinaryOp("*", Num(2.0), Var("x")))
 
     def test_div_binds_tighter_than_sub(self):
         # x - 6 / 2  →  x - (6/2)
-        result = parse(t((TT.VAR, "x"), TT.MINUS, (TT.NUM, 6.0), TT.DIV, (TT.NUM, 2.0)))
+        result = parse(
+            t((TT.IDENTIFIER, "x"), TT.MINUS, (TT.NUM, 6.0), TT.DIV, (TT.NUM, 2.0))
+        )
         assert result == BinaryOp("-", Var("x"), BinaryOp("/", Num(6.0), Num(2.0)))
 
     def test_parens_override_precedence(self):
@@ -66,7 +70,7 @@ class TestPrecedence:
                 (TT.NUM, 2.0),
                 TT.RPAREN,
                 TT.MUL,
-                (TT.VAR, "x"),
+                (TT.IDENTIFIER, "x"),
             )
         )
         assert result == BinaryOp("*", BinaryOp("+", Num(3.0), Num(2.0)), Var("x"))
@@ -88,29 +92,31 @@ class TestAssociativity:
 
 class TestUnaryOperators:
     def test_unary_minus(self):
-        assert parse(t(TT.MINUS, (TT.VAR, "x"))) == UnaryOp("-", Var("x"))
+        assert parse(t(TT.MINUS, (TT.IDENTIFIER, "x"))) == UnaryOp("-", Var("x"))
 
     def test_unary_plus(self):
-        assert parse(t(TT.PLUS, (TT.VAR, "x"))) == UnaryOp("+", Var("x"))
+        assert parse(t(TT.PLUS, (TT.IDENTIFIER, "x"))) == UnaryOp("+", Var("x"))
 
     def test_double_unary_minus(self):
         # --x
-        result = parse(t(TT.MINUS, TT.MINUS, (TT.VAR, "x")))
+        result = parse(t(TT.MINUS, TT.MINUS, (TT.IDENTIFIER, "x")))
         assert result == UnaryOp("-", UnaryOp("-", Var("x")))
 
     def test_unary_minus_in_expression(self):
         # 3 + -x
-        result = parse(t((TT.NUM, 3.0), TT.PLUS, TT.MINUS, (TT.VAR, "x")))
+        result = parse(t((TT.NUM, 3.0), TT.PLUS, TT.MINUS, (TT.IDENTIFIER, "x")))
         assert result == BinaryOp("+", Num(3.0), UnaryOp("-", Var("x")))
 
 
 class TestParentheses:
     def test_simple_parens(self):
-        result = parse(t(TT.LPAREN, (TT.VAR, "x"), TT.RPAREN))
+        result = parse(t(TT.LPAREN, (TT.IDENTIFIER, "x"), TT.RPAREN))
         assert result == Var("x")
 
     def test_nested_parens(self):
-        result = parse(t(TT.LPAREN, TT.LPAREN, (TT.VAR, "x"), TT.RPAREN, TT.RPAREN))
+        result = parse(
+            t(TT.LPAREN, TT.LPAREN, (TT.IDENTIFIER, "x"), TT.RPAREN, TT.RPAREN)
+        )
         assert result == Var("x")
 
     def test_complex_nesting(self):
@@ -120,10 +126,10 @@ class TestParentheses:
                 (TT.NUM, 3.0),
                 TT.MUL,
                 TT.LPAREN,
-                (TT.VAR, "x"),
+                (TT.IDENTIFIER, "x"),
                 TT.PLUS,
                 TT.LPAREN,
-                (TT.VAR, "y"),
+                (TT.IDENTIFIER, "y"),
                 TT.MINUS,
                 (TT.NUM, 1.0),
                 TT.RPAREN,
@@ -139,7 +145,7 @@ class TestParentheses:
 
 class TestEquations:
     def test_simple_equation(self):
-        result = parse(t((TT.VAR, "x"), TT.EQUAL, (TT.NUM, 3.0)))
+        result = parse(t((TT.IDENTIFIER, "x"), TT.EQUAL, (TT.NUM, 3.0)))
         assert result == Equation(Var("x"), Num(3.0))
 
     def test_equation_with_expressions_on_both_sides(self):
@@ -148,13 +154,13 @@ class TestEquations:
             t(
                 (TT.NUM, 3.0),
                 TT.MUL,
-                (TT.VAR, "x"),
+                (TT.IDENTIFIER, "x"),
                 TT.PLUS,
                 (TT.NUM, 1.0),
                 TT.EQUAL,
                 (TT.NUM, 2.0),
                 TT.MUL,
-                (TT.VAR, "x"),
+                (TT.IDENTIFIER, "x"),
                 TT.PLUS,
                 (TT.NUM, 5.0),
             )
@@ -165,7 +171,7 @@ class TestEquations:
         )
 
     def test_expression_without_eq_is_not_equation(self):
-        result = parse(t((TT.NUM, 3.0), TT.PLUS, (TT.VAR, "x")))
+        result = parse(t((TT.NUM, 3.0), TT.PLUS, (TT.IDENTIFIER, "x")))
         assert not isinstance(result, Equation)
 
 

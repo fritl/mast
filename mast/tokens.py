@@ -5,15 +5,16 @@ from dataclasses import dataclass
 class TokenType(Enum):
     """Token types the lexer can output"""
 
-    # Number and variable
+    # Number and Identifier
     NUM = auto()
-    VAR = auto()
+    IDENTIFIER = auto()
 
     # Basic operations
     PLUS = auto()
     MINUS = auto()
     DIV = auto()
     MUL = auto()
+    POW = auto()
 
     EQUAL = auto()
 

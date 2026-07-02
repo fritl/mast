@@ -1,3 +1,4 @@
+import token
 from mast.lexer import tokenize
 from mast.tokens import TokenType as TT, Token
 import pytest
@@ -13,8 +14,8 @@ import pytest
         ("=", TT.EQUAL, None),
         ("(", TT.LPAREN, None),
         (")", TT.RPAREN, None),
-        ("x", TT.VAR, "x"),
-        ("hallowelt", TT.VAR, "hallowelt"),
+        ("x", TT.IDENTIFIER, "x"),
+        ("hallowelt", TT.IDENTIFIER, "hallowelt"),
     ],
 )
 def test_single_tokens(expression: str, type: TT, value: str | float | None):
@@ -43,11 +44,19 @@ def test_numbers(expression: str, value: str | float | None):
     assert first_token.value == pytest.approx(value)
 
 
+def test_exponentiation():
+    tokens: list[Token] = tokenize("^")
+    assert tokens == [Token(TT.POW), Token(TT.EOF)]
+
+    tokens: list[Token] = tokenize("3^3")
+    assert tokens == [Token(TT.NUM, 3), Token(TT.POW), Token(TT.NUM, 3), Token(TT.EOF)]
+
+
 def test_equation():
     tokens: list[Token] = tokenize("3x + 12 = 10")
     expected_tokens: list[Token] = [
         Token(TT.NUM, 3),
-        Token(TT.VAR, "x"),
+        Token(TT.IDENTIFIER, "x"),
         Token(TT.PLUS),
         Token(TT.NUM, 12),
         Token(TT.EQUAL),
