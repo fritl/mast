@@ -26,6 +26,9 @@ class Equation:
         self.right = self.left.simplify()
         return self
 
+    def contains_var(self, var: str) -> bool:
+        return self.left.contains_var(var) or self.right.contains_var(var)
+
 
 def is_zero(node):
     return isinstance(node, Num) and node.value == 0
@@ -93,6 +96,41 @@ class Power:
         if isinstance(self.base, Num) and isinstance(self.exponent, Num):
             return Num(self.base.value**self.exponent.value)
         return self
+
+    def contains_var(self, var: str) -> bool:
+        return self.base.contains_var(var) or self.exponent.contains_var(var)
+
+    def differentiate(self, wrt: str = "x") -> Expr:
+        # x^2x = e^(2x*ln(x))
+        if self.base.contains_var(wrt) and self.exponent.contains_var(wrt):
+            return Power(
+                Var("e"), BinaryOp("*", self.exponent, FunctionCall("ln", self.base))
+            ).differentiate(wrt)
+
+        if self.base.contains_var(wrt):
+            return BinaryOp(
+                "*",
+                self.exponent,
+                Power(self.base, BinaryOp("-", self.exponent, Num(1))),
+            )
+
+        if self.base == Var("e"):
+            return BinaryOp(
+                "*",
+                self.exponent.differentiate(wrt),
+                Power(self.base, self.exponent),
+            )
+
+        else:
+            return BinaryOp(
+                "*",
+                self.exponent.differentiate(wrt),
+                BinaryOp(
+                    "*",
+                    Power(self.base, self.exponent),
+                    FunctionCall("ln", self.base),
+                ),
+            )
 
 
 @dataclass
@@ -198,6 +236,60 @@ class BinaryOp:
             case "/":
                 return self.__simplify_div()
 
+    def contains_var(self, var: str) -> bool:
+        return self.left.contains_var(var) or self.right.contains_var(var)
+
+    def __diff_add(self, wrt: str = "x") -> Expr:
+        return BinaryOp(
+            "+", self.left.differentiate(wrt), self.right.differentiate(wrt)
+        )
+
+    def __diff_sub(self, wrt: str = "x") -> Expr:
+        return BinaryOp(
+            "-", self.left.differentiate(wrt), self.right.differentiate(wrt)
+        )
+
+    def __diff_mul(self, wrt: str = "x") -> Expr:
+        # 2*x
+        if self.left.contains_var(wrt) and not self.right.contains_var(wrt):
+            return BinaryOp("*", self.right, self.left.differentiate(wrt))
+        # x*2
+        if self.right.contains_var(wrt) and not self.left.contains_var(wrt):
+            return BinaryOp("*", self.left, self.right.differentiate(wrt))
+
+        return BinaryOp(
+            "+",
+            BinaryOp("*", self.left.differentiate(wrt), self.right),
+            BinaryOp("*", self.left, self.right.differentiate()),
+        )
+
+    def __diff_div(self, wrt: str = "x") -> Expr:
+        # x/(2+3) -> 1/(2+3) * x'
+        if self.left.contains_var(wrt) and not self.right.contains_var(wrt):
+            return BinaryOp(
+                "*", BinaryOp("/", Num(1), self.right), self.right.differentiate()
+            )
+        return BinaryOp(
+            "/",
+            BinaryOp(
+                "-",
+                BinaryOp("*", self.left.differentiate(wrt), self.right),
+                BinaryOp("*", self.left, self.right.differentiate()),
+            ),
+            Power(self.right, Num(2)),
+        )
+
+    def differentiate(self, wrt: str = "x") -> Expr:
+        match self.operator:
+            case "+":
+                return self.__diff_add(wrt)
+            case "-":
+                return self.__diff_sub(wrt)
+            case "*":
+                return self.__diff_mul(wrt)
+            case "/":
+                return self.__diff_div(wrt)
+
 
 @dataclass
 class UnaryOp:
@@ -225,6 +317,12 @@ class UnaryOp:
         if self.operator == "+":
             return self.operand
         return self
+
+    def contains_var(self, var: str) -> bool:
+        return self.operand.contains_var(var)
+
+    def differentiate(self, wrt: str = "x") -> Expr:
+        return UnaryOp(self.operator, self.operand.differentiate(wrt))
 
 
 @dataclass
@@ -269,6 +367,46 @@ class FunctionCall:
             return Num(self.eval({}))
         return self
 
+    def contains_var(self, var: str) -> bool:
+        return self.parameter.contains_var(var)
+
+    def differentiate(self, wrt: str = "x") -> Expr:
+        if not self.contains_var(wrt):
+            return Num(0)
+
+        inner_diff = self.parameter.differentiate(wrt)
+        match self.name:
+            case "sin":
+                outer_diff = FunctionCall("cos", self.parameter)
+
+            case "cos":
+                outer_diff = UnaryOp("-", FunctionCall("sin", self.parameter))
+
+            case "tan":
+                outer_diff = Power(FunctionCall("cos", self.parameter), Num(2))
+
+            case "ln":
+                outer_diff = BinaryOp("/", Num(1), self.parameter)
+
+            case "log":
+                outer_diff = BinaryOp(
+                    "/",
+                    Num(1),
+                    BinaryOp("*", self.parameter, FunctionCall("ln", Num(10))),
+                )
+
+            case "sqrt":
+                outer_diff = BinaryOp(
+                    "/",
+                    Num(1),
+                    BinaryOp("*", Num(2), FunctionCall("sqrt", self.parameter)),
+                )
+
+            case _:
+                raise RuntimeError(f"Can't differentiate unknown function {self.name}")
+
+        return BinaryOp("*", inner_diff, outer_diff)
+
 
 @dataclass
 class Num:
@@ -287,6 +425,12 @@ class Num:
     def simplify(self) -> Self:
         return self
 
+    def contains_var(self, _: str) -> bool:
+        return False
+
+    def differentiate(self, _: str = "x") -> Expr:
+        return Num(0)
+
 
 @dataclass
 class Var:
@@ -304,3 +448,11 @@ class Var:
 
     def simplify(self) -> Self:
         return self
+
+    def contains_var(self, var: str) -> bool:
+        return var == self.name
+
+    def differentiate(self, wrt: str = "x") -> Expr:
+        if wrt == self.name:
+            return Num(1)
+        return Num(0)
