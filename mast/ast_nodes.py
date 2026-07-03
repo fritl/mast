@@ -383,7 +383,9 @@ class FunctionCall:
                 outer_diff = UnaryOp("-", FunctionCall("sin", self.parameter))
 
             case "tan":
-                outer_diff = Power(FunctionCall("cos", self.parameter), Num(2))
+                outer_diff = BinaryOp(
+                    "/", Num(1), Power(FunctionCall("cos", self.parameter), Num(2))
+                )
 
             case "ln":
                 outer_diff = BinaryOp("/", Num(1), self.parameter)
