@@ -157,6 +157,23 @@ class BinaryOp:
     def latex(self) -> str:
         if self.operator == "/":
             return f"\\frac{{{self.left.latex()}}}{{{self.right.latex()}}}"
+        if isinstance(self.left, BinaryOp) and isinstance(self.right, BinaryOp):
+            if self.left.operator in {"+", "-"} and self.right.operator in {"*", "/"}:
+                return f"\\left({self.left.latex()}\\right){self.operator}{self.right.latex()}"
+            if self.left.operator in {"*", "/"} and self.right.operator in {"+", "-"}:
+                return f"{self.left.latex()}{self.operator}\\left({self.right.latex()}\\right)"
+        if isinstance(self.left, Power | FunctionCall) and isinstance(
+            self.right, BinaryOp
+        ):
+            return (
+                f"{self.left.latex()}{self.operator}\\left({self.right.latex()}\\right)"
+            )
+        if isinstance(self.right, Power | FunctionCall) and isinstance(
+            self.left, BinaryOp
+        ):
+            return (
+                f"\\left({self.left.latex()}\\right){self.operator}{self.right.latex()}"
+            )
         return f"{self.left.latex()}{self.operator}{self.right.latex()}"
 
     def eval(self, env: dict[str, float]) -> float:
