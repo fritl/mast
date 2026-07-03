@@ -40,6 +40,7 @@ def main():
     ast = ast.differentiate()
     ast = ast.simplify()
     print(f"[grey66]Derivative:[default] {ast}")
+    print(f"[grey66]LaTeX:[default] {ast.latex()}")
     variables = collect_vars(ast)
     variable_env: dict[str, float] = {"e": e, "pi": pi}
     variables -= {"e", "pi"}

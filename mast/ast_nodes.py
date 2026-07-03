@@ -14,6 +14,9 @@ class Equation:
     def __str__(self):
         return f"{self.left} = {self.right}"
 
+    def latex(self) -> str:
+        return f"{self.left.latex()} = {self.right.latex()}"
+
     def eval(self, env: dict[str, float]) -> bool:
         left = self.left.eval(env)
         right = self.right.eval(env)
@@ -75,6 +78,11 @@ class Power:
 
     def __str__(self):
         return f"({self.base}^{self.exponent})"
+
+    def latex(self) -> str:
+        if isinstance(self.base, BinaryOp | Power):
+            return f"\\left({self.base.latex()}\\right)^{{{self.exponent.latex()}}}"
+        return f"{self.base.latex()}^{{{self.exponent.latex()}}}"
 
     def eval(self, env: dict[str, float]) -> float:
         base = self.base.eval(env)
@@ -145,6 +153,11 @@ class BinaryOp:
 
     def __str__(self):
         return f"({self.left} {self.operator} {self.right})"
+
+    def latex(self) -> str:
+        if self.operator == "/":
+            return f"\\frac{{{self.left.latex()}}}{{{self.right.latex()}}}"
+        return f"{self.left.latex()}{self.operator}{self.right.latex()}"
 
     def eval(self, env: dict[str, float]) -> float:
         left = self.left.eval(env)
@@ -299,6 +312,11 @@ class UnaryOp:
     def __str__(self):
         return f"({self.operator}{self.operand})"
 
+    def latex(self) -> str:
+        if isinstance(self.operand, BinaryOp):
+            return f"{self.operator}\\left({self.operand.latex()}\\right)"
+        return f"{self.operator}{self.operand.latex()}"
+
     @property
     def label(self) -> str:
         return self.operator
@@ -332,6 +350,12 @@ class FunctionCall:
 
     def __str__(self):
         return f"{self.name}({self.parameter})"
+
+    def latex(self) -> str:
+        # Sqrt has special syntax because LaTeX is bad.
+        if self.name == "sqrt":
+            return f"\\sqrt{{{self.parameter.latex()}}}"
+        return f"\\{self.name}({self.parameter.latex()})"
 
     @property
     def label(self) -> str:
@@ -417,6 +441,9 @@ class Num:
     def __str__(self):
         return f"{self.value}"
 
+    def latex(self) -> str:
+        return str(self.value)
+
     @property
     def label(self) -> str:
         return f"{self.value}"
@@ -439,6 +466,11 @@ class Var:
     name: str
 
     def __str__(self):
+        return self.name
+
+    def latex(self) -> str:
+        if self.name in {"pi"}:
+            return f"\\{self.name}"
         return self.name
 
     @property
