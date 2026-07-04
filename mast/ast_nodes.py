@@ -157,24 +157,25 @@ class BinaryOp:
     def latex(self) -> str:
         if self.operator == "/":
             return f"\\frac{{{self.left.latex()}}}{{{self.right.latex()}}}"
+        operator = "\\cdot " if self.operator == "*" else self.operator
         if isinstance(self.left, BinaryOp) and isinstance(self.right, BinaryOp):
             if self.left.operator in {"+", "-"} and self.right.operator in {"*", "/"}:
-                return f"\\left({self.left.latex()}\\right){self.operator}{self.right.latex()}"
+                return (
+                    f"\\left({self.left.latex()}\\right){operator}{self.right.latex()}"
+                )
             if self.left.operator in {"*", "/"} and self.right.operator in {"+", "-"}:
-                return f"{self.left.latex()}{self.operator}\\left({self.right.latex()}\\right)"
+                return (
+                    f"{self.left.latex()}{operator}\\left({self.right.latex()}\\right)"
+                )
         if isinstance(self.left, Power | FunctionCall) and isinstance(
             self.right, BinaryOp
         ):
-            return (
-                f"{self.left.latex()}{self.operator}\\left({self.right.latex()}\\right)"
-            )
+            return f"{self.left.latex()}{operator}\\left({self.right.latex()}\\right)"
         if isinstance(self.right, Power | FunctionCall) and isinstance(
             self.left, BinaryOp
         ):
-            return (
-                f"\\left({self.left.latex()}\\right){self.operator}{self.right.latex()}"
-            )
-        return f"{self.left.latex()}{self.operator}{self.right.latex()}"
+            return f"\\left({self.left.latex()}\\right){operator}{self.right.latex()}"
+        return f"{self.left.latex()}{operator}{self.right.latex()}"
 
     def eval(self, env: dict[str, float]) -> float:
         left = self.left.eval(env)
@@ -290,21 +291,21 @@ class BinaryOp:
         return BinaryOp(
             "+",
             BinaryOp("*", self.left.differentiate(wrt), self.right),
-            BinaryOp("*", self.left, self.right.differentiate()),
+            BinaryOp("*", self.left, self.right.differentiate(wrt)),
         )
 
     def __diff_div(self, wrt: str = "x") -> Expr:
         # x/(2+3) -> 1/(2+3) * x'
         if self.left.contains_var(wrt) and not self.right.contains_var(wrt):
             return BinaryOp(
-                "*", BinaryOp("/", Num(1), self.right), self.right.differentiate()
+                "*", BinaryOp("/", Num(1), self.right), self.right.differentiate(wrt)
             )
         return BinaryOp(
             "/",
             BinaryOp(
                 "-",
                 BinaryOp("*", self.left.differentiate(wrt), self.right),
-                BinaryOp("*", self.left, self.right.differentiate()),
+                BinaryOp("*", self.left, self.right.differentiate(wrt)),
             ),
             Power(self.right, Num(2)),
         )
