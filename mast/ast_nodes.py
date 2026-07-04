@@ -298,7 +298,7 @@ class BinaryOp:
         # x/(2+3) -> 1/(2+3) * x'
         if self.left.contains_var(wrt) and not self.right.contains_var(wrt):
             return BinaryOp(
-                "*", BinaryOp("/", Num(1), self.right), self.right.differentiate(wrt)
+                "*", BinaryOp("/", Num(1), self.right), self.left.differentiate(wrt)
             )
         return BinaryOp(
             "/",
