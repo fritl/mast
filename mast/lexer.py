@@ -11,7 +11,7 @@ def tokenize(math_expr: str) -> list[Token]:
 
 
     Raises:
-        RuntimeError: If a unknown token is found
+        SyntaxError: If a unknown token is found
     """
     token_stream: list[Token] = []
     i = 0
