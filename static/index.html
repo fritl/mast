@@ -1,0 +1,599 @@
+<!DOCTYPE html>
+<html lang="de">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MAST</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.css">
+    <link rel="icon" type="image/svg+xml" href="/static/logo_light_export.svg" media="(prefers-color-scheme: light)">
+    <link rel="icon" type="image/svg+xml" href="/static/logo_dark_export.svg" media="(prefers-color-scheme: dark)">
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.js"></script>
+    <style>
+        :root {
+            --bg: #f6f7fb;
+            --panel: #ffffff;
+            --border: #e2e4ec;
+            --text: #1e2130;
+            --muted: #8a8fa3;
+            --blue: #4f5bd5;
+            --blue-bg: #eef0fd;
+            --purple: #8452d5;
+            --teal: #23a596;
+            --error: #d1453b;
+            --error-bg: #fbeceb;
+            --radius: 10px;
+            --ast-filter: none;
+        }
+
+        :root[data-theme="dark"] {
+            --bg: #14161f;
+            --panel: #1c1f2b;
+            --border: #2c303f;
+            --text: #eceef4;
+            --muted: #8b90a6;
+            --blue: #7c86ef;
+            --blue-bg: #262a45;
+            --purple: #b28cf0;
+            --teal: #4fd8c6;
+            --error: #f0796e;
+            --error-bg: #3a2229;
+            --ast-filter: invert(0.94) hue-rotate(180deg);
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        html,
+        body {
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background: var(--bg);
+            color: var(--text);
+            font-family: 'Space Grotesk', sans-serif;
+            padding: 28px 24px 60px;
+            transition: background .15s, color .15s;
+        }
+
+        .mono {
+            font-family: 'IBM Plex Mono', monospace;
+        }
+
+        header {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            margin-bottom: 24px;
+        }
+
+        h1 {
+            font-size: 20px;
+            font-weight: 700;
+            margin: 0 0 3px;
+            letter-spacing: -0.01em;
+        }
+
+        .subtitle {
+            color: var(--muted);
+            font-size: 13px;
+            margin: 0;
+        }
+
+        #theme-toggle {
+            background: var(--panel);
+            border: 1px solid var(--border);
+            color: var(--text);
+            border-radius: 999px;
+            padding: 7px 14px;
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 12.5px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            flex-shrink: 0;
+        }
+
+        #theme-toggle:hover {
+            border-color: var(--blue);
+        }
+
+        label {
+            display: block;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            margin-bottom: 8px;
+        }
+
+        input[type=text] {
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 14px;
+            color: var(--text);
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 7px;
+            padding: 10px 12px;
+            width: 100%;
+            outline: none;
+            transition: border-color .15s;
+        }
+
+        input[type=text]:focus {
+            border-color: var(--blue);
+        }
+
+        button {
+            font-family: 'Space Grotesk', sans-serif;
+            font-weight: 600;
+            font-size: 13px;
+            background: var(--panel);
+            color: var(--text);
+            border: 1px solid var(--border);
+            border-radius: 7px;
+            padding: 10px 16px;
+            cursor: pointer;
+            transition: border-color .15s, color .15s, background .15s;
+        }
+
+        button:hover {
+            border-color: var(--blue);
+            color: var(--blue);
+        }
+
+        button:active {
+            background: var(--blue-bg);
+        }
+
+        .reload-btn {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 12px;
+            font-size: 12px;
+            border-radius: 999px;
+        }
+
+        .app {
+            display: flex;
+            flex-direction: row;
+            gap: 18px;
+            align-items: flex-start;
+        }
+
+        @media (max-width: 860px) {
+            .app {
+                flex-direction: column;
+            }
+        }
+
+        .col {
+            flex: 1;
+            min-width: 0;
+            width: 100%;
+        }
+
+        .panel {
+            background: var(--panel);
+            border: 1px solid var(--border);
+            border-top: 3px solid var(--accent, var(--blue));
+            border-radius: var(--radius);
+            padding: 18px;
+        }
+
+        #col-expr .panel {
+            --accent: var(--blue);
+        }
+
+        #col-ast .panel {
+            --accent: var(--purple);
+        }
+
+        #col-latex .panel {
+            --accent: var(--teal);
+        }
+
+        .panel-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 14px;
+        }
+
+        .panel-title {
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            color: var(--accent, var(--blue));
+        }
+
+        .block {
+            margin-bottom: 18px;
+        }
+
+        .block:last-child {
+            margin-bottom: 0;
+        }
+
+        .action-row {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            flex-wrap: wrap;
+            margin-bottom: 10px;
+        }
+
+        .action-row input[type=text] {
+            width: 56px;
+            flex: none;
+            text-align: center;
+        }
+
+        .wrt-label {
+            font-size: 12px;
+            color: var(--muted);
+        }
+
+        #var-inputs {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 10px;
+        }
+
+        .var-field {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 13px;
+            color: var(--muted);
+        }
+
+        .var-field input {
+            width: 60px;
+        }
+
+        #eval-result {
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 14px;
+            color: var(--teal);
+            min-height: 18px;
+        }
+
+        #eval-result.error {
+            color: var(--error);
+        }
+
+        .center-body,
+        .right-body {
+            min-height: 220px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 8px;
+        }
+
+        .center-body svg {
+            max-width: 100%;
+            display: block;
+            filter: var(--ast-filter);
+        }
+
+        .placeholder {
+            color: var(--muted);
+            font-size: 13px;
+            text-align: center;
+        }
+
+        .error-msg {
+            color: var(--error);
+            background: var(--error-bg);
+            border-radius: 7px;
+            padding: 10px 12px;
+            font-size: 12.5px;
+            text-align: center;
+            width: 100%;
+        }
+
+        .latex-box {
+            font-size: 20px;
+            color: var(--text);
+            overflow-x: auto;
+            max-width: 100%;
+        }
+
+        .latex-box .katex {
+            font-size: 1.1em;
+            color: var(--text);
+        }
+    </style>
+</head>
+
+<body>
+
+    <header>
+        <div>
+            <h1>MAST</h1>
+            <p class="subtitle">Mathematical Abstract Syntax Tree</p>
+        </div>
+        <button id="theme-toggle" type="button">
+            <span id="theme-icon">🌙</span>
+            <span id="theme-label">Dark</span>
+        </button>
+    </header>
+
+    <div class="app">
+
+        <!-- LEFT: input + actions -->
+        <div class="col" id="col-expr">
+            <div class="panel">
+                <div class="panel-title" style="margin-bottom:14px;">Expression</div>
+
+                <div class="block">
+                    <input id="expr" type="text" autocomplete="off" spellcheck="false"
+                        value="sin(x)^2 + 2*x^3 - cos(pi*x)" />
+                </div>
+
+                <div class="block">
+                    <div class="action-row">
+                        <button id="btn-simplify">Simplify</button>
+                    </div>
+                </div>
+
+                <div class="block">
+                    <div class="action-row">
+                        <button id="btn-differentiate">Differentiate</button>
+                        <span class="wrt-label">wrt</span>
+                        <input id="wrt" type="text" value="x" maxlength="4" />
+                    </div>
+                </div>
+
+                <div class="block">
+                    <div class="action-row">
+                        <button id="btn-reload-vars" class="reload-btn">⟳ Variablen laden</button>
+                    </div>
+                    <div id="var-inputs"></div>
+                    <div class="action-row">
+                        <button id="btn-evaluate">Evaluate</button>
+                    </div>
+                    <div id="eval-result"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- CENTER: AST -->
+        <div class="col" id="col-ast">
+            <div class="panel">
+                <div class="panel-header">
+                    <div class="panel-title">AST</div>
+                    <button id="btn-reload-ast" class="reload-btn">⟳ Reload</button>
+                </div>
+                <div class="center-body" id="ast-body">
+                    <div class="placeholder">— auf Reload drücken —</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- RIGHT: LaTeX -->
+        <div class="col" id="col-latex">
+            <div class="panel">
+                <div class="panel-header">
+                    <div class="panel-title">LaTeX</div>
+                    <button id="btn-reload-latex" class="reload-btn">⟳ Reload</button>
+                </div>
+                <div class="right-body" id="latex-body">
+                    <div class="placeholder">— auf Reload drücken —</div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        const API = "/api";
+        const exprInput = document.getElementById('expr');
+        const wrtInput = document.getElementById('wrt');
+        const astBody = document.getElementById('ast-body');
+        const latexBody = document.getElementById('latex-body');
+        const varInputsEl = document.getElementById('var-inputs');
+        const evalResultEl = document.getElementById('eval-result');
+
+        // ---------- Dark mode ----------
+        const themeToggle = document.getElementById('theme-toggle');
+        const themeIcon = document.getElementById('theme-icon');
+        const themeLabel = document.getElementById('theme-label');
+        let isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        applyTheme();
+
+        themeToggle.addEventListener('click', () => {
+            isDark = !isDark;
+            applyTheme();
+        });
+
+        function applyTheme() {
+            document.documentElement.setAttribute('data-theme', isDark ? 'dark' : 'light');
+            themeIcon.textContent = isDark ? '☀️' : '🌙';
+            themeLabel.textContent = isDark ? 'Light' : 'Dark';
+        }
+
+        // ---------- Variable detection (manuell per Button) ----------
+        const KNOWN_FUNCS = new Set(['sin', 'cos', 'tan', 'asin', 'acos', 'atan', 'sinh', 'cosh', 'tanh', 'log', 'ln', 'sqrt', 'exp', 'abs', 'pi', 'e']);
+
+        function detectVars(expr) {
+            const matches = expr.match(/[a-zA-Z_][a-zA-Z0-9_]*/g) || [];
+            const vars = new Set();
+            matches.forEach(m => {if (!KNOWN_FUNCS.has(m)) vars.add(m);});
+            return [...vars];
+        }
+
+        function currentVarValues() {
+            const env = {};
+            varInputsEl.querySelectorAll('input[data-var]').forEach(inp => {
+                env[inp.dataset.var] = parseFloat(inp.value || '0');
+            });
+            return env;
+        }
+
+        function buildVarInputs() {
+            const vars = detectVars(exprInput.value);
+            const previous = currentVarValues();
+            varInputsEl.innerHTML = '';
+            evalResultEl.textContent = '';
+            evalResultEl.classList.remove('error');
+            if (vars.length === 0) {
+                varInputsEl.innerHTML = '<span style="font-size:12px; color:var(--muted);">keine Variablen erkannt</span>';
+                return;
+            }
+            vars.forEach(v => {
+                const field = document.createElement('div');
+                field.className = 'var-field';
+                const val = previous.hasOwnProperty(v) ? previous[v] : 1;
+                field.innerHTML = `<span>${v} =</span><input type="text" data-var="${v}" value="${val}"/>`;
+                varInputsEl.appendChild(field);
+            });
+        }
+
+        document.getElementById('btn-reload-vars').addEventListener('click', buildVarInputs);
+
+        // ---------- API helpers ----------
+        async function postJSON(path, body) {
+            const res = await fetch(`${API}/${path}`, {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify(body)
+            });
+            if (!res.ok) {
+                let detail = 'Fehler bei der Anfrage';
+                try {
+                    const data = await res.json();
+                    detail = data.detail || detail;
+                } catch (_) { /* Antwort war kein JSON, z.B. ein 500er HTML-Traceback */}
+                throw new Error(detail);
+            }
+            return res;
+        }
+
+        function showPlaceholder(el, text) {
+            el.innerHTML = `<div class="placeholder">${text}</div>`;
+        }
+        function showError(el, msg) {
+            el.innerHTML = `<div class="error-msg">${escapeHtml(msg)}</div>`;
+        }
+        function escapeHtml(s) {
+            const d = document.createElement('div');
+            d.textContent = s;
+            return d.innerHTML;
+        }
+
+        // Graphviz liefert einen vollen XML-Prolog + DOCTYPE vor dem <svg>-Tag,
+        // den manche Browser beim Einfügen per innerHTML nicht sauber verarbeiten.
+        function cleanSvg(svgText) {
+            return svgText
+                .replace(/<\?xml[^>]*\?>/i, '')
+                .replace(/<!DOCTYPE[^>]*>/i, '')
+                .trim();
+        }
+
+        async function updateAst() {
+            const expr = exprInput.value.trim();
+            if (!expr) {showPlaceholder(astBody, '— kein Ausdruck —'); return;}
+            showPlaceholder(astBody, 'lädt …');
+            try {
+                const res = await postJSON('ast', {expr});
+                const svgText = await res.text();
+                astBody.innerHTML = cleanSvg(svgText);
+                const svgEl = astBody.querySelector('svg');
+                if (svgEl) {
+                    // Graphviz setzt width/height in "pt" auf dem <svg>-Root. Das kann in
+                    // Kombination mit CSS max-width dazu führen, dass die Grafik gar
+                    // nicht oder mit Höhe 0 gerendert wird. Wir setzen die Größe daher
+                    // direkt am Element statt uns nur auf CSS zu verlassen.
+                    svgEl.removeAttribute('width');
+                    svgEl.removeAttribute('height');
+                    svgEl.style.width = '100%';
+                    svgEl.style.height = 'auto';
+                } else {
+                    showError(astBody, 'Server hat kein gültiges SVG zurückgegeben.');
+                    console.error('AST-Antwort enthielt kein <svg>:', svgText);
+                }
+            } catch (err) {
+                showError(astBody, err.message);
+                console.error('AST-Reload fehlgeschlagen:', err);
+            }
+        }
+
+        async function updateLatex() {
+            const expr = exprInput.value.trim();
+            if (!expr) {showPlaceholder(latexBody, '— kein Ausdruck —'); return;}
+            showPlaceholder(latexBody, 'lädt …');
+            try {
+                const res = await postJSON('latex', {expr});
+                const latex = await res.json();
+                latexBody.innerHTML = '<div class="latex-box" id="katex-target"></div>';
+                katex.render(latex, document.getElementById('katex-target'), {throwOnError: false, displayMode: true});
+            } catch (err) {
+                showError(latexBody, err.message);
+                console.error('LaTeX-Reload fehlgeschlagen:', err);
+            }
+        }
+
+        document.getElementById('btn-reload-ast').addEventListener('click', updateAst);
+        document.getElementById('btn-reload-latex').addEventListener('click', updateLatex);
+
+        document.getElementById('btn-simplify').addEventListener('click', async () => {
+            const expr = exprInput.value.trim();
+            if (!expr) return;
+            try {
+                const res = await postJSON('simplify', {expr});
+                const result = await res.json();
+                exprInput.value = result;
+            } catch (err) {
+                evalResultEl.textContent = err.message;
+                evalResultEl.classList.add('error');
+            }
+        });
+
+        document.getElementById('btn-differentiate').addEventListener('click', async () => {
+            const expr = exprInput.value.trim();
+            if (!expr) return;
+            const wrt = wrtInput.value.trim() || 'x';
+            try {
+                const res = await postJSON('differentiate', {expr, wrt});
+                const result = await res.json();
+                exprInput.value = result;
+            } catch (err) {
+                evalResultEl.textContent = err.message;
+                evalResultEl.classList.add('error');
+            }
+        });
+
+        document.getElementById('btn-evaluate').addEventListener('click', async () => {
+            const expr = exprInput.value.trim();
+            if (!expr) return;
+            const env = currentVarValues();
+            evalResultEl.classList.remove('error');
+            try {
+                const res = await postJSON('evaluate', {expr, env});
+                const value = await res.json();
+                evalResultEl.textContent = `= ${Number(value).toLocaleString('de-DE', {maximumFractionDigits: 6})}`;
+            } catch (err) {
+                evalResultEl.textContent = err.message;
+                evalResultEl.classList.add('error');
+            }
+        });
+    </script>
+</body>
+
+</html>
