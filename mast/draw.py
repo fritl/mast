@@ -44,9 +44,9 @@ def add_node(cur_node_id: str | None, graph: pgv.AGraph, node: Expr | Equation):
         "style": "filled",
         "color": "white",
         "fontcolor": font_color,
-        "shape": "circle",
-        "width": ".7",
-        "fixedsize": True,
+        # "shape": "circle",
+        # "width": ".7",
+        # "fixedsize": True,
     }
 
     match node:
