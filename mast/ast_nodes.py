@@ -249,6 +249,21 @@ class BinaryOp:
         if equal(self.left, self.right):
             return Power(self.left, Num(2))
 
+        # (1/x)*x -> 1
+        if (
+            isinstance(self.left, BinaryOp)
+            and self.left.operator == "/"
+            and equal(self.left.right, self.right)
+        ):
+            return self.left.left
+        # x*(1/x) -> 1
+        if (
+            isinstance(self.right, BinaryOp)
+            and self.right.operator == "/"
+            and equal(self.right.right, self.left)
+        ):
+            return self.right.left
+
         return self
 
     def __simplify_div(self):
