@@ -1,8 +1,24 @@
+import math
 from math import sin, cos, tan, log, sqrt, log10
 from typing import Literal, Self
 from dataclasses import dataclass
 
 type Expr = BinaryOp | UnaryOp | Num | Var | Power | FunctionCall
+
+"""
+Precedence values:
+    +: 1
+    -: 1.5
+    -(unary): 2
+    +(unary): 2
+    *: 3
+    /: 3
+    ^: 4
+    function call: inf
+    num: inf
+    var: inf
+
+"""
 
 
 @dataclass
@@ -73,6 +89,7 @@ def equal(node_a, node_b):
 class Power:
     base: Expr
     exponent: Expr
+    precedence: float = 4
 
     label: str = "^"
 
@@ -80,9 +97,12 @@ class Power:
         return f"({self.base}^{self.exponent})"
 
     def latex(self) -> str:
-        if isinstance(self.base, BinaryOp | Power):
-            return f"\\left({self.base.latex()}\\right)^{{{self.exponent.latex()}}}"
-        return f"{self.base.latex()}^{{{self.exponent.latex()}}}"
+        base_str: str = f"{self.base.latex()}"
+        if self.base.precedence <= self.precedence:
+            base_str: str = f"\\left({self.base.latex()}\\right)"
+        exp_str: str = f"{{{self.exponent.latex()}}}"
+
+        return f"{base_str}^{exp_str}"
 
     def eval(self, env: dict[str, float]) -> float:
         base = self.base.eval(env)
@@ -148,6 +168,11 @@ class BinaryOp:
     right: Expr
 
     @property
+    def precedence(self) -> float:
+        precedence_values: dict[str, float] = {"+": 1, "-": 1.5, "*": 3, "/": 3}
+        return precedence_values[self.operator]
+
+    @property
     def label(self) -> str:
         return self.operator
 
@@ -158,24 +183,15 @@ class BinaryOp:
         if self.operator == "/":
             return f"\\frac{{{self.left.latex()}}}{{{self.right.latex()}}}"
         operator = "\\cdot " if self.operator == "*" else self.operator
-        if isinstance(self.left, BinaryOp) and isinstance(self.right, BinaryOp):
-            if self.left.operator in {"+", "-"} and self.right.operator in {"*", "/"}:
-                return (
-                    f"\\left({self.left.latex()}\\right){operator}{self.right.latex()}"
-                )
-            if self.left.operator in {"*", "/"} and self.right.operator in {"+", "-"}:
-                return (
-                    f"{self.left.latex()}{operator}\\left({self.right.latex()}\\right)"
-                )
-        if isinstance(self.left, Power | FunctionCall) and isinstance(
-            self.right, BinaryOp
-        ):
-            return f"{self.left.latex()}{operator}\\left({self.right.latex()}\\right)"
-        if isinstance(self.right, Power | FunctionCall) and isinstance(
-            self.left, BinaryOp
-        ):
-            return f"\\left({self.left.latex()}\\right){operator}{self.right.latex()}"
-        return f"{self.left.latex()}{operator}{self.right.latex()}"
+        left_str: str = f"{self.left.latex()}"
+        if self.precedence > self.left.precedence:
+            left_str: str = f"\\left({self.left.latex()}\\right)"
+        right_str: str = f"{self.right.latex()}"
+        if self.right.precedence is not math.inf:
+            if self.precedence > math.floor(self.right.precedence):
+                right_str: str = f"\\left({self.right.latex()}\\right)"
+
+        return f"{left_str}{operator}{right_str}"
 
     def eval(self, env: dict[str, float]) -> float:
         left = self.left.eval(env)
@@ -326,12 +342,13 @@ class BinaryOp:
 class UnaryOp:
     operator: Literal["-", "+"]
     operand: Expr
+    precedence: float = 2
 
     def __str__(self):
         return f"({self.operator}{self.operand})"
 
     def latex(self) -> str:
-        if isinstance(self.operand, BinaryOp):
+        if self.precedence > self.operand.precedence:
             return f"{self.operator}\\left({self.operand.latex()}\\right)"
         return f"{self.operator}{self.operand.latex()}"
 
@@ -365,6 +382,7 @@ class UnaryOp:
 class FunctionCall:
     name: str
     parameter: Expr
+    precedence: float = math.inf
 
     def __str__(self):
         return f"{self.name}({self.parameter})"
@@ -455,6 +473,7 @@ class FunctionCall:
 @dataclass
 class Num:
     value: float
+    precedence: float = math.inf
 
     def __str__(self):
         return f"{self.value}"
@@ -482,6 +501,7 @@ class Num:
 @dataclass
 class Var:
     name: str
+    precedence: float = math.inf
 
     def __str__(self):
         return self.name
