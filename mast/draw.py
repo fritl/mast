@@ -14,7 +14,7 @@ import pygraphviz as pgv
 def draw(label: str, ast: Expr | Equation) -> bytes:
     graph = pgv.AGraph(
         directed=True,
-        label=f"<<B>{label}</B>>",
+        # label=f"<<B>{label}</B>>",
         fontcolor="black",
         fontname="JetBrains Mono",
         labelloc="t",

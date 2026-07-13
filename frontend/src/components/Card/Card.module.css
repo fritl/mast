@@ -1,0 +1,25 @@
+.card {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-lg);
+    position: relative;
+
+    padding: var(--space-md);
+    margin: var(--space-md);
+
+    --card-color: color-mix(in oklab, var(--color-background), white 20%);
+    background-color: var(--card-color);
+    box-shadow: 3px 3px 10px rgba(10, 10, 10, 0.5);
+
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--color-border);
+    border-top: 4px solid var(--color-accent);
+}
+
+.cardTitle {
+    color: color-mix(in oklab, var(--color-accent), white 30%);
+}
+
+.cardContainer {
+    margin: var(--space-sm)
+}

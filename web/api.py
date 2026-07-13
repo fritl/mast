@@ -59,7 +59,7 @@ def api_simplify(req: ExprRequest) -> str:
 
 
 @api_router.post("/evaluate")
-def api_evalutae(req: EvaluationRequest) -> float:
+def api_evaluate(req: EvaluationRequest) -> float:
     try:
         tokens: list[Token] = tokenize(req.expr)
         ast: Expr | Equation = RDParser(tokens).parse()
@@ -91,3 +91,15 @@ def api_differentiate(req: DifferentationRequest) -> str:
         raise HTTPException(status_code=400, detail="cannot differentiate equations")
 
     return str(ast.differentiate(req.wrt))
+
+
+@api_router.post("/variables")
+def api_variables(req: ExprRequest):
+    try:
+        tokens: list[Token] = tokenize(req.expr)
+        ast: Expr | Equation = RDParser(tokens).parse()
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e)) from e
+    vars = collect_vars(ast)
+    vars -= {"pi", "e"}
+    return list(vars)

@@ -249,14 +249,14 @@ class BinaryOp:
         if equal(self.left, self.right):
             return Power(self.left, Num(2))
 
-        # (1/x)*x -> 1
+        # (1/x)*x
         if (
             isinstance(self.left, BinaryOp)
             and self.left.operator == "/"
             and equal(self.left.right, self.right)
         ):
             return self.left.left
-        # x*(1/x) -> 1
+        # x*(1/x)*x
         if (
             isinstance(self.right, BinaryOp)
             and self.right.operator == "/"

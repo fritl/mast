@@ -1,0 +1,24 @@
+.button {
+    background-color: color-mix(in oklab, var(--color-background), white 50%);
+    padding: var(--space-sm);
+    border-radius: var(--radius-sm);
+    color: var(--color-text);
+    border: none;
+    outline: none;
+
+    &:hover {
+        background-color: color-mix(in oklab, var(--color-background), white 30%);
+    }
+
+    &:focus {
+        outline: 2px solid black;
+    }
+
+    &.primaryButton {
+        &:hover {
+            background-color: color-mix(in oklab, var(--color-secondary), black 30%);
+        }
+
+        background-color: var(--color-secondary);
+    }
+}

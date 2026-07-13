@@ -1,0 +1,22 @@
+.inputWrapper {
+    display: flex;
+    flex-direction: column;
+}
+
+.labelText {
+    font-size: 0.875rem;
+}
+
+.inputField {
+    background-color: var(--color-background);
+    padding: var(--space-sm);
+    color: var(--color-text);
+    border: 2px solid var(--color-border);
+    border-radius: var(--radius-sm);
+    outline: none;
+}
+
+.inputField:focus {
+    outline: 1px solid var(--color-secondary);
+    border-radius: var(--radius-sm);
+}

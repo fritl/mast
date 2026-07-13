@@ -1,0 +1,7 @@
+.astContainer {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-md);
+    justify-content: center;
+    align-items: center;
+}
