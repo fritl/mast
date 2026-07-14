@@ -6,9 +6,9 @@ export default defineConfig({
     plugins: [devtools(), solidPlugin()],
     server: {
         proxy: {
-            "/api": "http://localhost:8000"
+            "/api": "http://backend:8000"
         },
-        port: 3000,
+        port: 5173,
     },
     build: {
         target: 'esnext',
