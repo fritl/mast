@@ -1,0 +1,91 @@
+.wrapper {
+    @media (prefers-color-scheme: dark) {
+        --card-color: lab(7.78201 -0.0000149012 0);
+    }
+
+    @media (prefers-color-scheme: light) {
+        --card-color: white;
+    }
+
+    margin: auto;
+    width: 100%;
+    max-width: 60%;
+    overflow: hidden;
+    padding: var(--space-lg);
+    border-radius: var(--radius-lg);
+    background-color: var(--card-color);
+
+}
+
+[data-corvu-accordion-trigger] {
+
+    width: 100%;
+    border-left: none;
+    border-right: none;
+    border-bottom-width: 1px;
+    border-top-width: 1px;
+    border-color: var(--color-accent);
+    background-color: transparent;
+    padding-left: 1rem;
+    padding-right: 1rem;
+    padding-top: 0.75rem;
+    padding-bottom: 0.75rem;
+    text-align: left;
+    font-weight: 500;
+    color: var(--color-text);
+    transition-property: all;
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    transition-duration: 100ms;
+}
+
+
+[data-corvu-accordion-trigger]:hover {
+    background-color: color-mix(in srgb, var(--color-accent) 80%, gray);
+}
+
+[data-corvu-accordion-trigger]:focus-visible {
+    outline: 2px solid transparent;
+    outline-offset: 2px;
+    background-color: color-mix(in srgb, var(--color-accent) 80%, gray);
+}
+
+[data-corvu-accordion-content] {
+    border-bottom: 3px solid var(--color-accent);
+    overflow: hidden;
+    background-color: color-mix(in srgb, var(--color-accent) 40%, gray);
+}
+
+[data-corvu-accordion-content][data-collapsed] {
+    animation: collapse 120ms ease;
+}
+
+[data-corvu-accordion-content][data-expanded] {
+    animation: expand 120ms ease;
+}
+
+@keyframes expand {
+    0% {
+        height: 0px;
+    }
+
+    100% {
+        height: var(--corvu-disclosure-content-height);
+    }
+}
+
+@keyframes collapse {
+    0% {
+        height: var(--corvu-disclosure-content-height);
+    }
+
+    100% {
+        height: 0px;
+    }
+}
+
+.contentWrapper {
+    padding-left: 1.5rem;
+    padding-right: 1rem;
+    padding-top: 0.5rem;
+    padding-bottom: 0.5rem;
+}

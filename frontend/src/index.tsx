@@ -6,7 +6,7 @@ import './index.css';
 import "katex/dist/katex.min.css"
 import { Router, Route } from '@solidjs/router';
 import Home from './pages/Home/Home';
-import Info from './pages/Info';
+import Info from './pages/Info/Info';
 import App from './App';
 
 const root = document.getElementById('root');

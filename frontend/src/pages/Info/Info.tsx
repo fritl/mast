@@ -1,5 +1,23 @@
-import { BranchIcon, CommitIcon, TimeIcon } from "../../components/Octoicons/icons"
+import Accordion from "@corvu/accordion"
+import style from "./Info.module.css"
+import faqData from "./faqdata.json"
+import { For } from "solid-js"
 
 export default function Info() {
-    return <></>
+    return <div class={style.wrapper}>
+        <Accordion>
+            <For each={Object.entries(faqData)}>
+                {([question, answer], _) =>
+                    <Accordion.Item>
+                        <Accordion.Trigger><p innerHTML={question} /></Accordion.Trigger>
+                        <Accordion.Content>
+                            <div class={style.contentWrapper}>
+                                <p style="white-space: pre-line;" innerHTML={answer} />
+                            </div>
+                        </Accordion.Content >
+                    </Accordion.Item >
+                }
+            </For>
+        </Accordion >
+    </div >
 }
