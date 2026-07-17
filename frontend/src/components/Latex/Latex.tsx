@@ -1,47 +1,28 @@
-import { ComponentProps, createResource, Match, onMount, Switch } from "solid-js"
+import { ComponentProps, createEffect, Match, Switch } from "solid-js"
 import { useMastContext } from "../../context/MastContext"
 import style from "./Latex.module.css"
 import katex from "katex"
-import Button from "../Button/Button"
-
-async function fetchLatex(mathInput: string): Promise<string> {
-    const res = await fetch("/api/latex", {
-        headers: {
-            "Content-Type": "application/json"
-        },
-        method: "POST",
-        body: JSON.stringify({ "expr": mathInput })
-    })
-    if (!res.ok) {
-        throw new Error((await res.json())["detail"])
-    }
-    return res.json()
-}
 
 function KatexRenderer(props: { tex: string }) {
     let el!: HTMLDivElement;
-    onMount(() => {
+    createEffect(() => {
         katex.render(props.tex, el)
     })
     return <div ref={el} />
 }
 
 export default function Latex(props: ComponentProps<"div">) {
-    const { mathInput } = useMastContext()
-    const [latex, { refetch }] = createResource(mathInput, fetchLatex)
+    const { latex, errorMsg } = useMastContext()
     return <div class={style.container} {...props}>
         <Switch>
-            <Match when={latex.loading}>
-                <p>Loading AST ...</p>
-            </Match>
-            <Match when={latex.error}>
-                <p style={"color: red"}>{latex.error.message}</p>
+            <Match when={errorMsg()}>
+                <p style={"color: red"}>{errorMsg()}</p>
             </Match>
             <Match when={latex()}>
                 <div class={style.latexContainer}>
                     <KatexRenderer tex={latex()!} />
                 </div>
             </Match>
-        </Switch >
-    </div>
+        </Switch>
+    </div >
 }

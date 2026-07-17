@@ -3,7 +3,7 @@ import styles from "./TextInput.module.css"
 import { useMastContext } from "../../context/MastContext";
 
 interface TextInputProps extends ComponentProps<"input"> {
-    title: string
+    title?: string
 }
 
 export default function TextInput(props: TextInputProps): JSX.Element {

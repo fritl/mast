@@ -1,36 +1,17 @@
-import { ComponentProps, createResource, Match, Switch } from "solid-js";
+import { ComponentProps, Match, Switch } from "solid-js";
 import { useMastContext } from "../../context/MastContext";
 import styles from "./Ast.module.css"
-import Button from "../Button/Button";
-
-async function fetchAst(mathInput: string): Promise<string> {
-    const res = await fetch("/api/ast", {
-        headers: {
-            "Content-Type": "application/json"
-        },
-        method: "POST",
-        body: JSON.stringify({ "expr": mathInput })
-    })
-    if (!res.ok) {
-        throw new Error((await res.json())["detail"])
-    }
-    return res.text()
-}
 
 export default function Ast(props: ComponentProps<"div">) {
-    const { mathInput } = useMastContext()
-    const [ast, { refetch }] = createResource(mathInput, fetchAst)
+    const { ast, errorMsg } = useMastContext()
     return <div class={styles.astContainer}>
         <Switch>
-            <Match when={ast.loading}>
-                <p>Loading AST ...</p>
-            </Match>
-            <Match when={ast.error}>
-                <p style={"color: red"}>{ast.error.message}</p>
+            <Match when={errorMsg()}>
+                <p style={"color: red"}>{errorMsg()}</p>
             </Match>
             <Match when={ast()}>
-                <div innerHTML={ast()} {...props} />
+                <div innerHTML={ast()!} {...props} />
             </Match>
-        </Switch >
-    </div>
+        </Switch>
+    </div >
 }
