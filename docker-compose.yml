@@ -19,7 +19,7 @@ services:
       target: backend-dev
 
     volumes:
-      - .:/app
+      - ./backend:/app
       - /app/.venv
 
     ports:
