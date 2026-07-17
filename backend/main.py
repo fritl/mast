@@ -14,3 +14,9 @@ def index():
 
 
 app.mount("/", StaticFiles(directory="dist"), name="dist")
+
+
+# Catch-all route
+@app.get("/{full_path:path}")
+async def spa_fallback(full_path: str):
+    return FileResponse("dist/index.html")
