@@ -26,6 +26,14 @@ CMD ["uv", "run", "fastapi", "dev", "--host", "0.0.0.0"]
 
 FROM node:22-slim AS frontend-builder
 
+ARG VITE_GIT_COMMIT
+ARG VITE_GIT_BRANCH
+ARG VITE_BUILD_TIME
+
+ENV VITE_GIT_COMMIT=$VITE_GIT_COMMIT
+ENV VITE_GIT_BRANCH=$VITE_GIT_BRANCH
+ENV VITE_BUILD_TIME=$VITE_BUILD_TIME
+
 WORKDIR /app
 COPY frontend/package*.json ./
 RUN npm ci
