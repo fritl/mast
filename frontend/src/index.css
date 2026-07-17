@@ -1,7 +1,7 @@
 @media (prefers-color-scheme: light) {
     :root {
         --color-text: #030607;
-        --color-background: #f8fbfc;
+        --color-background: lab(90.952 0 -0.0000119209);
         --color-primary: #00ccff;
         --color-secondary: #928fc7;
         --color-accent: #ff6600;
@@ -12,7 +12,7 @@
 @media (prefers-color-scheme: dark) {
     :root {
         --color-text: #f8fbfc;
-        --color-background: #030607;
+        --color-background: lab(2.75381 0 0);
         --color-primary: #00ccff;
         --color-secondary: #3b3870;
         --color-accent: #ff6600;

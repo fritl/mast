@@ -8,11 +8,19 @@
 }
 
 .inputField {
-    background-color: var(--color-background);
+    @media (prefers-color-scheme: light) {
+        --input-color: oklab(0.921998 -0.00000908971 0.0000215769 / 0.5)
+    }
+
+    @media (prefers-color-scheme: dark) {
+        --input-color: oklab(0.999998 -0.00000980496 0.0000234246 / 0.075)
+    }
+
+    background-color: var(--input-color);
     padding: var(--space-sm);
     color: var(--color-text);
-    border: 2px solid var(--color-border);
-    border-radius: var(--radius-sm);
+    border: none;
+    border-radius: var(--radius-md);
     outline: none;
 }
 
