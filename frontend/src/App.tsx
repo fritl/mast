@@ -1,27 +1,20 @@
 import { type Component } from 'solid-js';
-import { Card } from './components/Card/Card';
-import TextInput from './components/TextInput/TextInput';
-import { MastContextProvider } from './context/MastContext';
-import Ast from './components/Ast/Ast';
-import Latex from './components/Latex/Latex';
-import styles from "./App.module.css"
-import MathActions from './MathActions';
+import { Router, Route } from '@solidjs/router';
+import Info from './pages/Info/Info';
+import Home from './pages/Home/Home';
+import style from "./App.module.css"
+import Footer from './components/Footer/Footer';
+import Header from './components/Header/Header';
 
-const App: Component = () => {
-    return <MastContextProvider>
-        <div class={styles.gridcontainer}>
-            <Card style="grid-area: input;" title='Input'>
-                <TextInput title='Math Expression' name="expr" autocomplete='off' placeholder='Math Input' />
-                <MathActions />
-            </Card>
-            <Card style="grid-area: ast;" title="AST">
-                < Ast />
-            </Card>
-            <Card style="grid-area: latex;" title='LaTeX'>
-                <Latex />
-            </Card>
+const App: Component = (props) => {
+    return (<>
+        <div class={style.appContainer}>
+            <Header />
+            {props.children}
         </div>
-    </MastContextProvider >
+        <Footer />
+    </>
+    )
 };
 
 export default App;

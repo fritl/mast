@@ -1,7 +1,7 @@
 import { createEffect, createSignal, For, Show } from "solid-js";
-import Button from "./components/Button/Button";
-import TextInput from "./components/TextInput/TextInput";
-import { useMastContext } from "./context/MastContext";
+import Button from "../Button/Button";
+import TextInput from "../TextInput/TextInput";
+import { useMastContext } from "../../context/MastContext";
 import style from "./MathActions.module.css"
 import { createStore } from "solid-js/store";
 

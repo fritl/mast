@@ -4,6 +4,10 @@ services:
       context: .
       dockerfile: Dockerfile
       target: frontend-dev
+    environment:
+        VITE_GIT_COMMIT: ${VITE_GIT_COMMIT}
+        VITE_GIT_BRANCH: ${VITE_GIT_BRANCH}
+        VITE_BUILD_TIME: ${VITE_BUILD_TIME}
 
     volumes:
       - ./frontend:/app

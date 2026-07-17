@@ -4,6 +4,9 @@ import 'solid-devtools';
 
 import './index.css';
 import "katex/dist/katex.min.css"
+import { Router, Route } from '@solidjs/router';
+import Home from './pages/Home/Home';
+import Info from './pages/Info';
 import App from './App';
 
 const root = document.getElementById('root');
@@ -14,4 +17,12 @@ if (import.meta.env.DEV && !(root instanceof HTMLElement)) {
     );
 }
 
-render(() => <App />, root!);
+render(() => {
+    return (
+        <Router root={App}>
+            <Route path={"/"} component={Home} />
+            <Route path={"/info"} component={Info} />
+        </Router>
+    )
+}
+    , root!);

@@ -1,0 +1,18 @@
+.footer {
+    display: flex;
+    justify-content: center;
+    padding-inline: var(--space-lg);
+    color: gray;
+    padding-top: var(--space-sm);
+    padding-bottom: var(--space-lg);
+}
+
+.iconContainer {
+    display: flex;
+    justify-content: space-evenly;
+    gap: var(--space-lg);
+}
+
+.icon {
+    margin-inline: var(--space-sm);
+}
