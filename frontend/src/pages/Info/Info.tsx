@@ -5,6 +5,7 @@ import { For } from "solid-js"
 
 export default function Info() {
     return <div class={style.wrapper}>
+        <h1>FAQ</h1>
         <Accordion>
             <For each={Object.entries(faqData)}>
                 {([question, answer], _) =>
