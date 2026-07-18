@@ -1,19 +1,6 @@
-.wrapper {
-    @media (prefers-color-scheme: dark) {
-        --card-color: lab(7.78201 -0.0000149012 0);
-    }
-
-    @media (prefers-color-scheme: light) {
-        --card-color: white;
-    }
-
-    margin-block: auto;
-    margin-inline: var(--space-md);
-    overflow: hidden;
-    padding: var(--space-lg);
-    border-radius: var(--radius-lg);
-    background-color: var(--card-color);
-
+A {
+    color: var(--color-primary);
+    text-decoration: underline;
 }
 
 .accordion[data-corvu-accordion-trigger] {

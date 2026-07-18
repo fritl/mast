@@ -10,8 +10,8 @@ export default function Info() {
             <For each={Object.entries(faqData)}>
                 {([question, answer], _) =>
                     <Accordion.Item>
-                        <Accordion.Trigger><p innerHTML={question} /></Accordion.Trigger>
-                        <Accordion.Content>
+                        <Accordion.Trigger class={style.accordion}><p innerHTML={question} /></Accordion.Trigger>
+                        <Accordion.Content class={style.accordion}>
                             <div class={style.contentWrapper}>
                                 <p style="white-space: pre-line;" innerHTML={answer} />
                             </div>

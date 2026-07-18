@@ -1,16 +1,19 @@
-.gridcontainer {
+.gridContainer {
     display: grid;
     grid-template-columns: auto 1fr;
     grid-template-areas:
         "input ast"
         "input latex";
-    height: 100%;
-    flex: 1;
 }
 
 @media (max-width: 784px) {
-    .gridcontainer {
+    .gridContainer {
         grid-template-areas: "input" "ast" "latex";
         grid-template-columns: 1fr;
     }
+}
+
+.tutorialContainer {
+    width: min(80ch, 100%);
+    margin-inline: auto;
 }

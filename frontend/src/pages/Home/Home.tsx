@@ -6,10 +6,11 @@ import Ast from '../../components/Ast/Ast';
 import Latex from '../../components/Latex/Latex';
 import styles from "./Home.module.css"
 import MathActions from '../../components/MathActions/MathActions';
+import { Tutorial } from './Tutorial';
 
 const App: Component = () => {
     return <MastContextProvider>
-        <div class={styles.gridcontainer}>
+        <div class={styles.gridContainer}>
             <Card style="grid-area: input;" title='Input'>
                 <TextInput title='Math Expression' name="expr" autocomplete='off' placeholder='Math Input' />
                 <MathActions />
@@ -20,6 +21,9 @@ const App: Component = () => {
             <Card style="grid-area: latex;" title='LaTeX'>
                 <Latex />
             </Card>
+        </div>
+        <div class={styles.tutorialContainer}>
+            <Tutorial />
         </div>
     </MastContextProvider >
 };

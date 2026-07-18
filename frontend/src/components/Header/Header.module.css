@@ -24,13 +24,13 @@
     width: 100%;
 }
 
-A {
+.A {
     color: var(--color-text);
     text-decoration: none;
     transition: color ease 200ms;
 }
 
-A:hover {
+.A:hover {
     text-decoration: underline;
     color: var(--color-accent);
 }

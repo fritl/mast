@@ -14,8 +14,8 @@ export default function Header() {
                 </picture>
             </A>
             <nav class={style.nav}>
-                <A href="/">Home</A>
-                <A href="/info">Info</A>
+                <A href="/" class={style.A}>Home</A>
+                <A href="/info" class={style.A}>Info</A>
             </nav>
         </header >
     )
