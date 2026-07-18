@@ -22,8 +22,8 @@
             <img alt="Logo für Mast" src="docs/images/banner-light.png" width=800>
         </picture>
     </p>
-    <a href="#">
-        (Link to the demo)
+    <a href="https://mast.toqtou.me">
+        Demo
     </a>
 </div>
 
@@ -39,33 +39,30 @@
 - **Evaluating expressions.** If you have $ax^2 + bx + c$ you can input _a, b, c_ and _x_ and it will give you the value.
 - **Output LaTeX.** After inputting your math you can view the ast or, if you are a human, you can also view the Latex.
 
-## Common pitfalls
-
-1. You must always specify multiplication. Usually you can just write $3x$ and everyone knows it is $3\cdot x$. My program doesn't
-
 
 ## Running it locally
 
 To run this project you need:
-- [uv](https://docs.astral.sh/uv/getting-started/installation/)
-- [graphviz](https://graphviz.org)
+- [docker](https://docs.docker.com/engine/install/)
 - [git](https://git-scm.com/install/windows)
 
-To run the web ui just run the folowing commands:
+To run the web app just run the folowing commands:
 
 ```bash
 git clone https://github.com/fritl/mast.git
 cd mast
-uv run fastapi dev
+docker build -t mast:latest .
+docker run --rm -p 80:8000 mast:latest
 ```
-Then just open [http://localhost:8000](http://localhost:8000)
+Then just open [http://localhost](http://localhost)
 
-There's also a small cli you can run but it won't let you do everything unless you are willing to change the code to do the specific action you want to do.
-The cli can be run with:
-
-```bash
-uv run cli.py
-```
+>[!WARNING]
+>For a long time I named image files for the documentation `(3+2)*3.svg` and `3+2*3.svg`.
+>As it turns out Windows doesn't allow any `*` in filenames and I didn't
+>realise this until recently which is why by default you can't checkout most of
+>the commits in this repo if you are on windows. If you still want to check
+>them out you can run `git config core.protectNTFS false`. This will allow you
+>to check out the commits without creating the badly named files
 
 ## How it works
 
@@ -73,8 +70,16 @@ The processing follows three steps:
 1. **Lexing.** In this part the computer converts the input into tokens. While this is not strictly necessary it really helps with the next step because it gets rid of whitespace.
 2. **Parsing.** Specifically I used the _Recursive Descent_ parser. This converts the tokens of the previous step into an abstract syntax tree. This tree is useful because it handles precedence and you can work really well with it.
 
-![ast of 3+2*3](./docs/images/3+2*3.svg)
-![ast of (3+2)*3](./docs/images/(3+2)*3.svg)
+<picture>
+      <source media="(prefers-color-scheme: dark)" srcset="./docs/images/mast_example_1_light.svg">
+      <source media="(prefers-color-scheme: light)" srcset="./docs/images/mast_example_1_dark.svg">
+      <img alt="Beispiel AST" src="./docs/images/mast_example_1_dark.svg">
+</picture>
+<picture>
+      <source media="(prefers-color-scheme: dark)" srcset="./docs/images/mast_example_2_light.svg">
+      <source media="(prefers-color-scheme: light)" srcset="./docs/images/mast_example_2_dark.svg">
+      <img alt="Beispiel AST" src="./docs/images/mast_example_2_dark.svg">
+</picture>
 
 3. **Manipulating the AST.** Once you have parsed the input you can do a lots of actions like simplifying, differentiating or evaluating on the ast
 

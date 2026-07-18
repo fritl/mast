@@ -7,60 +7,60 @@
 <svg width="182pt" height="221pt"
  viewBox="0.00 0.00 182.00 221.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
 <g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 216.75)">
-<text xml:space="preserve" text-anchor="start" x="57.16" y="-190.75" font-family="JetBrains Mono" font-weight="bold" font-size="20.00">3+2*3</text>
-<!-- 139776050154704 -->
+<text xml:space="preserve" text-anchor="start" x="57.16" y="-190.75" font-family="JetBrains Mono" font-weight="bold" font-size="20.00" fill="white">3+2*3</text>
+<!-- 140573827747024 -->
 <g id="node1" class="node">
-<title>139776050154704</title>
+<title>140573827747024</title>
 <ellipse fill="#ff6600" stroke="white" cx="67.16" cy="-162" rx="27" ry="18"/>
 <text xml:space="preserve" text-anchor="middle" x="67.16" y="-157.32" font-family="JetBrains Mono" font-size="14.00" fill="white">+</text>
 </g>
-<!-- 139776050105376 -->
+<!-- 140573827681312 -->
 <g id="node2" class="node">
-<title>139776050105376</title>
+<title>140573827681312</title>
 <ellipse fill="#00ccff" stroke="white" cx="30.16" cy="-90" rx="30.16" ry="18"/>
 <text xml:space="preserve" text-anchor="middle" x="30.16" y="-85.33" font-family="JetBrains Mono" font-size="14.00" fill="#0b132b">3.0</text>
 </g>
-<!-- 139776050154704&#45;&gt;139776050105376 -->
+<!-- 140573827747024&#45;&gt;140573827681312 -->
 <g id="edge1" class="edge">
-<title>139776050154704&#45;&gt;139776050105376</title>
-<path fill="none" stroke="black" d="M58.58,-144.76C54.35,-136.75 49.13,-126.88 44.32,-117.79"/>
-<polygon fill="black" stroke="black" points="47.43,-116.18 39.66,-108.97 41.24,-119.45 47.43,-116.18"/>
+<title>140573827747024&#45;&gt;140573827681312</title>
+<path fill="none" stroke="white" d="M58.58,-144.76C54.35,-136.75 49.13,-126.88 44.32,-117.79"/>
+<polygon fill="white" stroke="white" points="47.43,-116.18 39.66,-108.97 41.24,-119.45 47.43,-116.18"/>
 </g>
-<!-- 139776050105712 -->
+<!-- 140573827681648 -->
 <g id="node3" class="node">
-<title>139776050105712</title>
+<title>140573827681648</title>
 <ellipse fill="#ff6600" stroke="white" cx="105.16" cy="-90" rx="27" ry="18"/>
 <text xml:space="preserve" text-anchor="middle" x="105.16" y="-85.33" font-family="JetBrains Mono" font-size="14.00" fill="white">*</text>
 </g>
-<!-- 139776050154704&#45;&gt;139776050105712 -->
+<!-- 140573827747024&#45;&gt;140573827681648 -->
 <g id="edge4" class="edge">
-<title>139776050154704&#45;&gt;139776050105712</title>
-<path fill="none" stroke="black" d="M75.98,-144.76C80.44,-136.55 85.96,-126.37 91,-117.09"/>
-<polygon fill="black" stroke="black" points="93.98,-118.94 95.68,-108.48 87.83,-115.6 93.98,-118.94"/>
+<title>140573827747024&#45;&gt;140573827681648</title>
+<path fill="none" stroke="white" d="M75.98,-144.76C80.44,-136.55 85.96,-126.37 91,-117.09"/>
+<polygon fill="white" stroke="white" points="93.98,-118.94 95.68,-108.48 87.83,-115.6 93.98,-118.94"/>
 </g>
-<!-- 139776050154064 -->
+<!-- 140573827746384 -->
 <g id="node4" class="node">
-<title>139776050154064</title>
+<title>140573827746384</title>
 <ellipse fill="#00ccff" stroke="white" cx="66.16" cy="-18" rx="30.16" ry="18"/>
 <text xml:space="preserve" text-anchor="middle" x="66.16" y="-13.32" font-family="JetBrains Mono" font-size="14.00" fill="#0b132b">2.0</text>
 </g>
-<!-- 139776050105712&#45;&gt;139776050154064 -->
+<!-- 140573827681648&#45;&gt;140573827746384 -->
 <g id="edge2" class="edge">
-<title>139776050105712&#45;&gt;139776050154064</title>
-<path fill="none" stroke="black" d="M96.12,-72.76C91.61,-64.67 86.03,-54.66 80.92,-45.49"/>
-<polygon fill="black" stroke="black" points="84.09,-43.99 76.17,-36.96 77.98,-47.39 84.09,-43.99"/>
+<title>140573827681648&#45;&gt;140573827746384</title>
+<path fill="none" stroke="white" d="M96.12,-72.76C91.61,-64.67 86.03,-54.66 80.92,-45.49"/>
+<polygon fill="white" stroke="white" points="84.09,-43.99 76.17,-36.96 77.98,-47.39 84.09,-43.99"/>
 </g>
-<!-- 139776050154384 -->
+<!-- 140573827746704 -->
 <g id="node5" class="node">
-<title>139776050154384</title>
+<title>140573827746704</title>
 <ellipse fill="#00ccff" stroke="white" cx="144.16" cy="-18" rx="30.16" ry="18"/>
 <text xml:space="preserve" text-anchor="middle" x="144.16" y="-13.32" font-family="JetBrains Mono" font-size="14.00" fill="#0b132b">3.0</text>
 </g>
-<!-- 139776050105712&#45;&gt;139776050154384 -->
+<!-- 140573827681648&#45;&gt;140573827746704 -->
 <g id="edge3" class="edge">
-<title>139776050105712&#45;&gt;139776050154384</title>
-<path fill="none" stroke="black" d="M114.21,-72.76C118.72,-64.67 124.29,-54.66 129.4,-45.49"/>
-<polygon fill="black" stroke="black" points="132.35,-47.39 134.16,-36.96 126.24,-43.99 132.35,-47.39"/>
+<title>140573827681648&#45;&gt;140573827746704</title>
+<path fill="none" stroke="white" d="M114.21,-72.76C118.72,-64.67 124.29,-54.66 129.4,-45.49"/>
+<polygon fill="white" stroke="white" points="132.35,-47.39 134.16,-36.96 126.24,-43.99 132.35,-47.39"/>
 </g>
 </g>
 </svg>
